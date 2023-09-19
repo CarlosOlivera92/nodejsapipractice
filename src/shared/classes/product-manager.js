@@ -30,12 +30,17 @@ class ProductManager {
     }
 
     async addProduct(title, description, price, thumbnail, code, stock) {
+        if (!title || !description || !price || !thumbnail || !code || !stock) {
+            console.error('Todos los campos son obligatorios.');
+            return;
+        }
+    
         const productExists = this.products.some(product => product.code === code);
         if (productExists) {
             console.error('El producto con el código indicado ya existe.');
             return;
         }
-
+    
         const product = {
             id: this.productCounter++,
             title,
@@ -45,10 +50,11 @@ class ProductManager {
             code,
             stock,
         };
-
+    
         this.products.push(product);
         await this.saveProducts();
     }
+    
 
     async getProducts() {
         return this.products;
