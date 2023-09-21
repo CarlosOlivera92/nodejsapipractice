@@ -5,7 +5,19 @@ class ProductManager {
         this.filePath = filePath;
         this.productCounter = 1;
         this.products = [];
-        this.loadProducts();
+    }
+
+    async initialize() {
+        try {
+            const data = await fs.readFile(this.filePath, 'utf8');
+            if (data) {
+                this.products = JSON.parse(data);
+                this.productCounter = Math.max(...this.products.map(product => product.id), 0) + 1;
+                console.log(this.products);
+            }
+        } catch (error) {
+            console.error('Error al cargar productos:', error);
+        }
     }
 
     async loadProducts() {
@@ -14,7 +26,6 @@ class ProductManager {
             if (data) {
                 this.products = JSON.parse(data);
                 this.productCounter = Math.max(...this.products.map(product => product.id), 0) + 1;
-                console.log(this.products)
             }
         } catch (error) {
             console.error('Error al cargar productos:', error);
@@ -65,13 +76,16 @@ class ProductManager {
         return product || 'Producto no encontrado';
     }
 
-    async updateProduct(id, updatedProduct) { //Actualizar producto segun su id
+    async updateProduct(id, updatedProduct) {
         const index = this.products.findIndex(product => product.id === id);
         if (index !== -1) {
-            this.products[index] = { id, ...updatedProduct };
+            // Se excluye el campo 'id' del objeto actualizado para mantenerlo estático.
+            const { id: updatedId, ...restOfUpdatedProduct } = updatedProduct;
+            this.products[index] = { id, ...restOfUpdatedProduct };
             await this.saveProducts();
         }
     }
+    
 
     async deleteProduct(id) {  //Borrar un producto segun su id
         const index = this.products.findIndex(product => product.id === id);

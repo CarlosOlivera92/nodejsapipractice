@@ -12,16 +12,14 @@ const __dirname = path.dirname(__filename);
 
 const filePath = path.join(__dirname, 'shared/data', 'products.json').replace(/\\/g, '/');
 const manager = new ProductManager(filePath);
-
+const port = 8080;
 
 
 const server = express();
 
 server.use(express.urlencoded({ extended: true }));
 
-server.listen(8080, () => {
-    console.log('Server listening on port: 8080');
-});
+
 
 //Metodo comentado porque ya hay productos en el archivo Products.Json
 /*
@@ -41,98 +39,38 @@ server.get('/add-product', (req, res) => {
 */
 
 server.get('/products', async (req, res) => {
-    const { limit } = req.query; // Destructuring
-    const products = await manager.getProducts();
+    try {
+        const { limit } = req.query;
+        const products = await manager.getProducts();
 
-    // Verificar si `limit` está presente y es un número válido
-    if (limit && !isNaN(parseInt(limit))) {
-        const limitNumber = parseInt(limit);
-
-        // Limitar la lista de productos utilizando el número especificado en `limit`
-        const limitedProducts = products.slice(0, limitNumber); //El primer argumento de Slice es el indice donde empezará
-
-        // Generar la lista de elementos HTML para los productos limitados
-        const productListHTML = limitedProducts.map(product => {
-            return `
-                <li>
-                    <strong>ID:</strong> ${product.id}<br>
-                    <strong>Título:</strong> ${product.title}<br>
-                    <strong>Descripción:</strong> ${product.description}<br>
-                    <strong>Precio:</strong> $${product.price}<br>
-                    <strong>Código:</strong> ${product.code}<br>
-                    <strong>Stock:</strong> ${product.stock}<br>
-                </li>
-            `;
-        });
-        const html = `
-            <html>
-                <head>
-                    <title>Lista de Productos</title>
-                </head>
-                <body>
-                    <h1>Lista de Productos</h1>
-                    <ul>
-                        ${productListHTML}
-                    </ul>
-                </body>
-            </html>
-        `;
-
-        res.send(html);
-    } else {
-        const productListHTML = products.map(product => {
-            return `
-                <li>
-                    <strong>ID:</strong> ${product.id}<br>
-                    <strong>Título:</strong> ${product.title}<br>
-                    <strong>Descripción:</strong> ${product.description}<br>
-                    <strong>Precio:</strong> $${product.price}<br>
-                    <strong>Código:</strong> ${product.code}<br>
-                    <strong>Stock:</strong> ${product.stock}<br>
-                </li>
-            `;
-        });
-
-        const html = `
-            <html>
-                <head>
-                    <title>Lista de Productos</title>
-                </head>
-                <body>
-                    <h1>Lista de Productos</h1>
-                    <ul>
-                        ${productListHTML}
-                    </ul>
-                </body>
-            </html>
-        `;
-        res.send(html);
+        if (limit && !isNaN(parseInt(limit))) {
+            const limitNumber = parseInt(limit);
+            const limitedProducts = products.slice(0, limitNumber);
+            res.json(limitedProducts);
+        } else {
+            res.json(products);
+        }
+    } catch (error) {
+        console.error('Error al obtener productos:', error);
+        res.status(500).json({ error: 'Error al obtener productos.' });
     }
 });
-server.get('/products/:pid', async (req, res) => {
-    const productId = parseInt(req.params.pid);
-    const selectedProduct = await manager.getProductById(productId);
-    console.log(selectedProduct);
-    const html = `
-        <html>
-            <head>
-                <title>Lista de Productos</title>
-            </head>
-            <body>
-                <h1>Lista de Productos</h1>
-                <ul>
-                    <li>
-                        <strong>ID:</strong> ${selectedProduct.id}<br>
-                        <strong>Título:</strong> ${selectedProduct.title}<br>
-                        <strong>Descripción:</strong> ${selectedProduct.description}<br>
-                        <strong>Precio:</strong> $${selectedProduct.price}<br>
-                        <strong>Código:</strong> ${selectedProduct.code}<br>
-                        <strong>Stock:</strong> ${selectedProduct.stock}<br>
-                    </li>
-                </ul>
-            </body>
-        </html>
-    `;
-    res.send(html);
 
-})
+server.get('/products/:pid', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.pid);
+        const selectedProduct = await manager.getProductById(productId);
+
+        if (selectedProduct === 'Producto no encontrado') {
+            res.status(404).json({ error: 'Producto no encontrado' });
+        } else {
+            res.json(selectedProduct);
+        }
+    } catch (error) {
+        console.error('Error al obtener el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+server.listen(port, () => {
+    console.log('Server listening on port: 8080');
+});
