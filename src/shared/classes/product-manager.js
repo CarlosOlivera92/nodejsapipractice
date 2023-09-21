@@ -7,18 +7,6 @@ class ProductManager {
         this.products = [];
     }
 
-    async initialize() {
-        try {
-            const data = await fs.readFile(this.filePath, 'utf8');
-            if (data) {
-                this.products = JSON.parse(data);
-                this.productCounter = Math.max(...this.products.map(product => product.id), 0) + 1;
-                console.log(this.products);
-            }
-        } catch (error) {
-            console.error('Error al cargar productos:', error);
-        }
-    }
 
     async loadProducts() {
         try {
