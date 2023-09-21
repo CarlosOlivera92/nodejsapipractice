@@ -41,6 +41,7 @@ server.get('/add-product', (req, res) => {
 server.get('/products', async (req, res) => {
     try {
         const { limit } = req.query;
+        await manager.loadProducts();
         const products = await manager.getProducts();
 
         if (limit && !isNaN(parseInt(limit))) {
@@ -58,6 +59,7 @@ server.get('/products', async (req, res) => {
 
 server.get('/products/:pid', async (req, res) => {
     try {
+        await manager.loadProducts();
         const productId = parseInt(req.params.pid);
         const selectedProduct = await manager.getProductById(productId);
 
