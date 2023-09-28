@@ -2,11 +2,11 @@
   {
     "id": 1,
     "title": "Grand Theft Auto V",
-    "description": "Juego de acción en un mundo abierto",
-    "price": 29.99,
+    "description": "Videojuego de acción-aventura de mundo abierto en tercera persona",
+    "price": 24.99,
     "thumbnail": "gta-v.jpg",
-    "code": "GTA5",
-    "stock": 100
+    "code": "GTAV",
+    "stock": 71
   },
   {
     "id": 2,

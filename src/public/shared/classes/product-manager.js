@@ -5,9 +5,8 @@ class ProductManager {
         this.filePath = filePath;
         this.productCounter = 1;
         this.products = [];
+        this.loadProducts();
     }
-
-
     async loadProducts() {
         try {
             const data = await fs.readFile(this.filePath, 'utf8');
@@ -73,8 +72,6 @@ class ProductManager {
             await this.saveProducts();
         }
     }
-    
-
     async deleteProduct(id) {  //Borrar un producto segun su id
         const index = this.products.findIndex(product => product.id === id);
         if (index !== -1) {
