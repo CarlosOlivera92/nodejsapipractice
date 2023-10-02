@@ -27,8 +27,8 @@ class ProductManager {
         }
     }
 
-    async addProduct(title, description, price, thumbnail, code, stock) {
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
+    async addProduct(title, description, price, thumbnail, code, status, stock) {
+        if (!title || !description || !price || !thumbnail || !code || !status || !stock) {
             console.error('Todos los campos son obligatorios.');
             return;
         }
@@ -46,6 +46,7 @@ class ProductManager {
             price,
             thumbnail,
             code,
+            status,
             stock,
         };
     
@@ -59,7 +60,8 @@ class ProductManager {
     }
 
     async getProductById(id) {
-        const product = this.products.find(product => product.id === id);
+        const parsedId = parseInt(id);
+        const product = this.products.find(product => product.id === parsedId);
         return product || 'Producto no encontrado';
     }
 

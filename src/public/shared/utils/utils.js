@@ -5,8 +5,10 @@ const __filename = fileURLToPath(import.meta.url);
 // Obtiene el directorio base
 const __dirname = path.dirname(__filename);
 
-const filePath = path.join(__dirname, '..', 'data', 'products.json').replace(/\\/g, '/');
+const productsFilePath = path.join(__dirname, '..', 'data', 'products.json').replace(/\\/g, '/');
+const cartsFilePath = path.join(__dirname, '..', 'data', 'carts.json').replace(/\\/g, '/');
 
 export {
-    filePath,
+    productsFilePath,
+    cartsFilePath,
 }

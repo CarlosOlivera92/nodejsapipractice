@@ -1,10 +1,9 @@
 import { Router } from "express";
 import { ProductManager } from "../public/shared/classes/product-manager.js";
-import { filePath } from "../public/shared/utils/utils.js";
+import { productsFilePath } from "../public/shared/utils/utils.js";
 
 const router = Router();
-const products = [];
-const manager = new ProductManager(filePath);
+const manager = new ProductManager(productsFilePath);
 
 
 router.get('/', async(req, res) => {
