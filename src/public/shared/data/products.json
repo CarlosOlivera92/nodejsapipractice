@@ -52,5 +52,15 @@
     "thumbnail": "zelda-botw.jpg",
     "code": "ZBOTW",
     "stock": 70
+  },
+  {
+    "id": 7,
+    "title": "Nuevo título del producto",
+    "description": "Nueva descripción del producto",
+    "price": 79.99,
+    "thumbnail": "Nueva URL de imagen",
+    "code": "Nuevo código del producto 2",
+    "status": true,
+    "stock": 150
   }
 ]

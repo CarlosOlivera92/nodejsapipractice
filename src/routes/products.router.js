@@ -42,13 +42,13 @@ router.get('/:pid', async (req, res) => {
 });
 router.post('/add-product', async(req, res) => {
     try {
-        const { title, description, price, thumbnail, code, stock } = req.body;
-        if (title && description && price && thumbnail && code && stock) {
+        const { title, description, price, thumbnail, code, status, stock } = req.body;
+        if (title && description && price && thumbnail && code && status && stock) {
             // Convierte los valores necesarios a los tipos adecuados (por ejemplo, price a número)
             const numericPrice = parseFloat(price);
             const numericStock = parseInt(stock);
 
-            await manager.addProduct(title, description, numericPrice, thumbnail, code, numericStock);
+            await manager.addProduct(title, description, numericPrice, thumbnail, code, status ,numericStock);
             res.status(201).send("Producto agregado exitosamente!")
         } else {
             res.status(400).send('Los parámetros de consulta son requeridos.');
@@ -62,9 +62,9 @@ router.put('/update-product/:pid', async (req, res) => {
     try {
         const paramId = req.params.pid;
         const productId = parseInt(paramId);
-        const { title, description, price, thumbnail, code, stock } = req.body;
+        const { title, description, price, thumbnail, code, status, stock } = req.body;
 
-        if (title && description && price && thumbnail && code && stock) {
+        if (title && description && price && thumbnail && code && status && stock) {
             // Convierte los valores necesarios a los tipos adecuados (por ejemplo, price a número)
             const numericPrice = parseFloat(price);
             const numericStock = parseInt(stock);
@@ -75,6 +75,7 @@ router.put('/update-product/:pid', async (req, res) => {
                 price: numericPrice,
                 thumbnail,
                 code,
+                status,
                 stock: numericStock, 
             };
             const existingProduct = await manager.getProductById(productId);
