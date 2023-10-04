@@ -33,7 +33,7 @@ router.post('/:cid/product/:pid', async(req,res) => {
         res.status(500).send({message: `Ha habido un error en el servidor`, error: error});
     }
 })
-router.post('/add-to-cart', async(req, res) => {
+router.post('/', async(req, res) => {
     try {
         const {cartId, productId} = req.body;
 

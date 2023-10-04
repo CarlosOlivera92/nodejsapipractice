@@ -27,8 +27,8 @@ class ProductManager {
         }
     }
 
-    async addProduct(title, description, price, thumbnail, code, status, stock) {
-        if (!title || !description || !price || !thumbnail || !code || !status || !stock) {
+    async addProduct(title, description, price, thumbnail, category, code, status, stock) {
+        if (!title || !description || !price || !thumbnail || !category || !code || !status || !stock) {
             console.error('Todos los campos son obligatorios.');
             return;
         }
@@ -38,13 +38,17 @@ class ProductManager {
             console.error('El producto con el código indicado ya existe.');
             return;
         }
-    
+        if (!Array.isArray(thumbnail) || thumbnail.some(item => typeof item !== 'string')) {
+            console.error('El campo "thumbnail" debe ser un array de strings.');
+            return;
+        }
         const product = {
             id: this.productCounter++,
             title,
             description,
             price,
             thumbnail,
+            category,
             code,
             status,
             stock,

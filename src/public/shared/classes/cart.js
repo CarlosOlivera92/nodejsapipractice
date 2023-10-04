@@ -46,7 +46,6 @@ class CartManager {
         let { id: productId, code } = product;
         const cartProduct = {
             productId,
-            code,
             quantity: 1
         }
         const cart = {

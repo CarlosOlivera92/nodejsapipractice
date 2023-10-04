@@ -62,5 +62,20 @@
     "code": "Nuevo código del producto 2",
     "status": true,
     "stock": 150
+  },
+  {
+    "id": 8,
+    "title": "Producto de prueba",
+    "description": "Descripción del producto de prueba",
+    "price": 19.99,
+    "thumbnail": [
+      "thumbnail1.jpg",
+      "thumbnail2.jpg",
+      "thumbnail3.jpg"
+    ],
+    "category": "Electrónica",
+    "code": "ABC123",
+    "status": true,
+    "stock": 77
   }
 ]

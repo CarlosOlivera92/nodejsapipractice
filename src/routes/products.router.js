@@ -40,15 +40,15 @@ router.get('/:pid', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
-router.post('/add-product', async(req, res) => {
+router.post('/', async(req, res) => {
     try {
-        const { title, description, price, thumbnail, code, status, stock } = req.body;
+        const { title, description, price, thumbnail, category, code, status, stock } = req.body;
         if (title && description && price && thumbnail && code && status && stock) {
             // Convierte los valores necesarios a los tipos adecuados (por ejemplo, price a número)
             const numericPrice = parseFloat(price);
             const numericStock = parseInt(stock);
 
-            await manager.addProduct(title, description, numericPrice, thumbnail, code, status ,numericStock);
+            await manager.addProduct(title, description, numericPrice, thumbnail, category, code, status ,numericStock);
             res.status(201).send("Producto agregado exitosamente!")
         } else {
             res.status(400).send('Los parámetros de consulta son requeridos.');
@@ -58,22 +58,23 @@ router.post('/add-product', async(req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
-router.put('/update-product/:pid', async (req, res) => {
+router.put('/:pid', async (req, res) => {
     try {
         const paramId = req.params.pid;
         const productId = parseInt(paramId);
-        const { title, description, price, thumbnail, code, status, stock } = req.body;
-
-        if (title && description && price && thumbnail && code && status && stock) {
+        const { title, description, price, thumbnail, category, code, status, stock } = req.body;
+        if (title && description && price && thumbnail && category && code && status && stock) {
             // Convierte los valores necesarios a los tipos adecuados (por ejemplo, price a número)
             const numericPrice = parseFloat(price);
             const numericStock = parseInt(stock);
-            
+            console.log(numericStock)
+
             const updatedProduct = {
                 title,
                 description,
                 price: numericPrice,
                 thumbnail,
+                category,
                 code,
                 status,
                 stock: numericStock, 
@@ -93,7 +94,7 @@ router.put('/update-product/:pid', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
-router.delete('/delete-product/:pid', async(req, res) => {
+router.delete('/:pid', async(req, res) => {
     try {
         const productId = parseInt(req.params.pid);
         const productExists = await manager.getProductById(productId);
