@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { cartsFilePath, productsFilePath } from "../public/shared/utils/utils.js";
+import { cartsFilePath, productsFilePath } from "../utils.js";
 import { CartManager } from '../public/shared/classes/cart.js';
 import { ProductManager } from "../public/shared/classes/product-manager.js";
 
