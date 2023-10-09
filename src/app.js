@@ -5,9 +5,11 @@ import handlebars from 'express-handlebars';
 import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
 import viewsRouter from './routes/views.router.js';
-
+import { ProductManager } from "./public/shared/classes/product-manager.js";
+import { productsFilePath } from "./utils.js";
 const port = 8080;
 const app = express();
+const manager = new ProductManager(productsFilePath);
 
 console.log(__dirname)
 //Servidor archivos estaticos
@@ -37,4 +39,27 @@ const socketServer = new Server(server);
 
 socketServer.on('connection', socket => {
     console.log('Nuevo cliente conectado')
+    socket.on('message', data => {
+        console.log(data);
+    })
+    socket.on('addProduct', async(productData) => {
+        console.log(productData);
+        try {
+            await manager.addProduct(
+              productData.title,
+              productData.description,
+              productData.price,
+              productData.thumbnail,
+              productData.category,
+              productData.code,
+              productData.status,
+              productData.stock
+            );
+      
+            const updatedProducts = await manager.getProducts();
+            socketServer.emit('updateProducts', updatedProducts); // Envia la actualización al cliente que la solicitó
+          } catch (error) {
+            console.error('Error al agregar el producto:', error);
+          }
+    })
 })

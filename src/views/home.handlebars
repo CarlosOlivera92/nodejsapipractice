@@ -1,5 +1,26 @@
-<div>
-    <p>Listo papu</p>
+<div class="products">
+    <h1>Productos</h1>
+    <ul>
+        {{#each products}}
+            <li>
+                <h1>{{this.title}}</h1>
+                <p>Descripción: {{this.description}}</p>
+                <p>Precio: ${{this.price}}</p>
+                <p>Categoría: {{this.category}}</p>
+                <p>Código: {{this.code}}</p>
+                <p>Estado: {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
+                <p>Stock: {{this.stock}}</p>
+
+                <!-- Iteración sobre las miniaturas -->
+                <h2>Miniaturas:</h2>
+                <ul>
+                    {{#each this.thumbnail}}
+                    <li><img src="{{this}}" alt="Miniatura"></li>
+                    {{/each}}
+                </ul>
+            </li>
+        {{/each}}
+    </ul>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/index.js"></script>
