@@ -26,19 +26,5 @@
     "code": "RDR2",
     "status": false,
     "stock": 44
-  },
-  {
-    "id": 3,
-    "title": "Rise of the Tomb Raider",
-    "description": "Embárcate en una emocionante odisea arqueológica en 'Rise of the Tomb Raider'. Lara Croft regresa en una aventura llena de misterio y peligro mientras busca respuestas en tumbas olvidadas y enfrenta desafíos mortales. Descubre secretos ancestrales, supera obstáculos mortales y desafía a enemigos implacables en tu búsqueda por la verdad. ¿Estás preparado para enfrentar tus miedos y desentrañar los secretos de la antigüedad en esta emocionante aventura de acción y exploración?",
-    "price": 44,
-    "thumbnail": [
-      "https://img.youtube.com/vi/1_FIyNcQSgA/maxresdefault.jpg",
-      "https://www.muycomputer.com/wp-content/uploads/2016/01/rise-of-the-tomb-raider-4-1024x576.jpg"
-    ],
-    "category": "Videojuego",
-    "code": "ROTR",
-    "status": false,
-    "stock": 41
   }
 ]

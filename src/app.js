@@ -43,23 +43,31 @@ socketServer.on('connection', socket => {
         console.log(data);
     })
     socket.on('addProduct', async(productData) => {
-        console.log(productData);
+    try {
+        await manager.addProduct(
+            productData.title,
+            productData.description,
+            productData.price,
+            productData.thumbnail,
+            productData.category,
+            productData.code,
+            productData.status,
+            productData.stock
+        );
+    
+        const updatedProducts = await manager.getProducts();
+        socketServer.emit('updateProducts', updatedProducts); // Envia la actualización al cliente que la solicitó
+        } catch (error) {
+            console.error('Error al agregar el producto:', error);
+        }
+    });
+    socket.on('delProduct', async(productId) => {
         try {
-            await manager.addProduct(
-              productData.title,
-              productData.description,
-              productData.price,
-              productData.thumbnail,
-              productData.category,
-              productData.code,
-              productData.status,
-              productData.stock
-            );
-      
+            await manager.deleteProduct(productId);
             const updatedProducts = await manager.getProducts();
             socketServer.emit('updateProducts', updatedProducts); // Envia la actualización al cliente que la solicitó
-          } catch (error) {
-            console.error('Error al agregar el producto:', error);
-          }
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+        }
     })
 })

@@ -1,5 +1,6 @@
 const socket = io();
 const form = document.getElementById('form');
+const delProductForm = document.getElementById('delProductForm');
 const productList = document.getElementById('product-list');
 
 form.addEventListener('submit', async (event) => {
@@ -31,7 +32,6 @@ form.addEventListener('submit', async (event) => {
     form.reset();
 });
 
-
 socket.on('updateProducts', (updatedProducts) => {
     console.log(updatedProducts);
     productList.innerHTML = ''; 
@@ -55,3 +55,11 @@ socket.on('updateProducts', (updatedProducts) => {
         productList.appendChild(li);
     });
 });
+
+delProductForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const formData = new FormData(delProductForm);
+    const productId = parseInt( formData.get('productId'));
+    console.log(productId);
+    socket.emit('delProduct', productId);
+})
