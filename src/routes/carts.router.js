@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { cartsFilePath, productsFilePath } from "../utils.js";
-import { CartManager } from '../public/shared/classes/cart.js';
-import { ProductManager } from "../public/shared/classes/product-manager.js";
+import { CartsManager } from "../dao/dbManager/carts.manager.js";
+import { ProductsManager } from "../dao/dbManager/products.manager.js";
+import { ObjectId } from "mongodb"
 
 const router = Router();
 
-const cartManager = new CartManager(cartsFilePath);
-const productManager = new ProductManager(productsFilePath);
+const cartManager = new CartsManager();
+const productManager = new ProductsManager();
 
 router.get('/', async(req, res) => {
-    const cart = await cartManager.getCart();
+    const cart = await cartManager.getAll();
     res.status(200).send( cart );
 });
 router.get('/:cid', async(req,res) => {
@@ -33,29 +34,34 @@ router.post('/:cid/product/:pid', async(req,res) => {
         res.status(500).send({message: `Ha habido un error en el servidor`, error: error});
     }
 })
-router.post('/', async(req, res) => {
+router.post('/', async (req, res) => {
     try {
-        const {cartId, productId} = req.body;
-
-        const cartExists = await cartManager.getCartById(cartId);
-
-        const product = await productManager.getProductById(productId);
-
-        if (cartExists !== "Carrito no encontrado") {
-            if (product !== "Producto no encontrado") {
-                await cartManager.addCart(cartId, product);
-                res.status(201).send("El producto ha sido agregado al carrito seleccionado");
-            } else {
-                res.status(404).send("No se ha podido encontrar el producto especificado");
-            }
+        const { productId } = req.body;
+        const id = new ObjectId(productId)
+      
+        // Busca el producto que deseas agregar
+        const product = await productManager.getOne(id);
+        
+        if (product !== "Producto no encontrado") {
+            const productInCart = {
+                productId: product.id,
+                code: product.code,
+                quantity: 1,
+            };
+    
+            const newCart = {
+                products: [productInCart],
+            };
+    
+            await cartManager.save(newCart);
+            res.status(201).send('Se ha creado un nuevo carrito y se ha agregado el producto.');
         } else {
-            await cartManager.addCart(cartId, product);
-            res.status(201).send('El carrito ha sido creado y los productos han sido agregados.');
+            res.status(404).send("No se ha podido encontrar el producto especificado");
         }
-
     } catch (error) {
-        res.status(500).send("Ha habido un error en el servidor " + error);
+      res.status(500).send("Ha habido un error en el servidor " + error);
     }
-})
+});
+  
 
 export default router;

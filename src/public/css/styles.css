@@ -45,6 +45,9 @@
 .products-list {
     width: 40%;
 }
-.products-list ul li img {
+.products-list .images {
+    padding: 0 2rem;
+}
+.products-list .images img {
     width: 20rem;
 }

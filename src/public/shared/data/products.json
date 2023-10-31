@@ -1,18 +1,5 @@
 [
   {
-    "id": 1,
-    "title": "Grand Theft Auto V",
-    "description": "Grand Theft Auto V te sumerge en un mundo lleno de crimen, acción y oportunidades mientras persigues fortuna y poder en la ciudad ficticia de Los Santos. En este juego de mundo abierto, tendrás la libertad de explorar, robar, conducir y enfrentarte a desafíos, todo mientras te sumerges en una trama emocionante llena de giros inesperados y personajes inolvidables. ¿Tienes lo que se necesita para triunfar en el bajo mundo de Los Santos?",
-    "price": 22,
-    "thumbnail": [
-      "https://sm.ign.com/ign_es/news/g/grand-thef/grand-theft-auto-5-and-gta-online-ps5-and-xbox-series-xs-new_sm83.jpg"
-    ],
-    "category": "Videojuego",
-    "code": "GTAV",
-    "status": false,
-    "stock": 22
-  },
-  {
     "id": 2,
     "title": "Red Dead Redemption 2",
     "description": "Red Dead Redemption 2 te transporta a un épico viaje a través del Salvaje Oeste, donde la lealtad, la traición y la supervivencia son moneda corriente. Explora un vasto y hermoso paisaje, interactúa con una variedad de personajes memorables y vive la vida de un forajido en un mundo lleno de peligros y aventuras. ¿Tendrás lo necesario para sobrevivir en este implacable y despiadado oeste?",
@@ -26,5 +13,35 @@
     "code": "RDR2",
     "status": false,
     "stock": 44
+  },
+  {
+    "id": 3,
+    "title": "Rise of the Tomb Raider",
+    "description": "Rise of The Tomb Raider es un videojuego de acción-aventura desarrollado por Crystal Dynamics. Es el undécimo videojuego de la serie Tomb Raider.",
+    "price": 22,
+    "thumbnail": [
+      "https://www.muycomputer.com/wp-content/uploads/2016/01/rise-of-the-tomb-raider-4-1024x576.jpg",
+      "https://img.youtube.com/vi/1_FIyNcQSgA/maxresdefault.jpg",
+      "https://cdn.computerhoy.com/sites/navi.axelspringer.es/public/media/image/2016/02/150189-directx-12-rise-tomb-raider.jpg?tf=3840x"
+    ],
+    "category": "Videojuego",
+    "code": "ROTR",
+    "status": false,
+    "stock": 31
+  },
+  {
+    "id": 4,
+    "title": "Mortal Kombat 11",
+    "description": "Mortal Kombat 11 es un videojuego de lucha desarrollado por NetherRealm Studios y publicado por Warner Bros. Interactive Entertainment. Se ejecuta en una versión muy modificada de Unreal Engine 3, ​ es la undécima entrega principal de la serie Mortal Kombat y una secuela de 2015 Mortal Kombat X",
+    "price": 29,
+    "thumbnail": [
+      "https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/media/image/2020/11/mortal-kombat-11-ultimate-2139229.jpg?tf=3840x",
+      "https://i.ytimg.com/vi/86D2q2Uvg9M/maxresdefault.jpg",
+      "https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/media/image/2020/05/mortal-kombat-11-aftermath-1953703.jpg?tf=3840x"
+    ],
+    "category": "Videojuego",
+    "code": "MKXI",
+    "status": false,
+    "stock": 65
   }
 ]

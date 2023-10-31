@@ -58,12 +58,11 @@
             </form>
         </div>
     </div>
-    <div class="products-list">
+    <div class="products-list" id="productList">
         <h1>Productos</h1>
-        <p>Listo papu :v</p>
-        <ul id="product-list">
-            {{#each products}}
-                <li id="product-{{this.id}}">
+        {{#each products}}
+            <ul >
+                <li>
                     <h1>{{this.title}}</h1>
                     <p>Descripción: {{this.description}}</p>
                     <p>Precio: ${{this.price}}</p>
@@ -71,17 +70,15 @@
                     <p>Código: {{this.code}}</p>
                     <p>Estado: {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
                     <p>Stock: {{this.stock}}</p>
-
-                    <!-- Iteración sobre las miniaturas -->
-                    <h2>Miniaturas:</h2>
-                    <ul>
-                        {{#each this.thumbnail}}
-                        <li><img src="{{this}}" alt="Miniatura"></li>
-                        {{/each}}
-                    </ul>
                 </li>
-            {{/each}}
-        </ul>
+            </ul>
+            <div class="images">
+                <h2>Miniaturas:</h2>
+                {{#each this.thumbnail}}
+                    <img src="{{this}}" alt="Miniatura">
+                {{/each}}
+            </div>
+        {{/each}}
     </div>
 </div>
 

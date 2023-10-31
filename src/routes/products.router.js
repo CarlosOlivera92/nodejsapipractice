@@ -1,29 +1,30 @@
 import { Router } from "express";
-import { ProductManager } from "../public/shared/classes/product-manager.js";
-import { productsFilePath } from "../utils.js";
+// import { ProductManager } from "../public/shared/classes/product-manager.js";
+import { ProductsManager } from "../dao/dbManager/products.manager.js";
+import { ObjectId } from "mongodb";
+// import { productsFilePath } from "../utils.js";
 
 const router = Router();
-const manager = new ProductManager(productsFilePath);
+const manager = new ProductsManager();
 
 
 router.get('/', async(req, res) => {
     try {
         const { limit } = req.query;
-        await manager.loadProducts();
-        const products = await manager.getProducts();
+        const products = await manager.getAll();
 
         if (limit && !isNaN(parseInt(limit))) {
             const limitNumber = parseInt(limit);
             const limitedProducts = products.slice(0, limitNumber);
-            res.send(limitedProducts);
+            res.send({status: "success", payload: limitedProducts});
         } else {
-            res.send(products);
+            res.send({status: "success", payload: products});
         }
     } catch (error) {
-        console.error('Error al obtener productos:', error);
-        res.status(500).json({ error: 'Error al obtener productos.' });
+        res.status(500).json({ status: 'error', message: error.message });
     }
 })
+/*
 router.get('/:pid', async (req, res) => {
     try {
         await manager.loadProducts();
@@ -39,7 +40,8 @@ router.get('/:pid', async (req, res) => {
         console.error('Error al obtener el producto:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
-});
+}); 
+*/
 router.post('/', async(req, res) => {
     try {
         const { title, description, price, thumbnail, category, code, status, stock } = req.body;
@@ -47,8 +49,8 @@ router.post('/', async(req, res) => {
             // Convierte los valores necesarios a los tipos adecuados (por ejemplo, price a número)
             const numericPrice = parseFloat(price);
             const numericStock = parseInt(stock);
-
-            await manager.addProduct(title, description, numericPrice, thumbnail, category, code, status ,numericStock);
+            const product = new ProductsManager(title, description, numericPrice, thumbnail, category, code, status ,numericStock)
+            await manager.save(product);
             res.status(201).send("Producto agregado exitosamente!")
         } else {
             res.status(400).send('Los parámetros de consulta son requeridos.');
@@ -79,10 +81,10 @@ router.put('/:pid', async (req, res) => {
                 status,
                 stock: numericStock, 
             };
-            const existingProduct = await manager.getProductById(productId);
+            const existingProduct = await manager.getOne(productId);
 
             if (existingProduct !== 'Producto no encontrado') {
-                await manager.updateProduct(productId, updatedProduct);
+                await manager.updateOne(productId, updatedProduct);
                 res.status(201).send("Producto modificado exitosamente!");
             } else {
                 res.status(404).send('El producto no se encontró. No se pudo actualizar.');
@@ -94,19 +96,16 @@ router.put('/:pid', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
+
 router.delete('/:pid', async(req, res) => {
     try {
-        const productId = parseInt(req.params.pid);
-        const productExists = await manager.getProductById(productId);
-        if (productExists !== 'Producto no encontrado') {
-            await manager.deleteProduct(productId);
-            res.status(200).send("Producto eliminado exitosamente!");
-        } else {
-            res.status(200).send("Producto no encontrado");
-        }
+        const productId = new ObjectId(req.params.pid);
+        console.log(productId);
+        await manager.deleteOne(productId);
+        res.status(200).send("Producto eliminado exitosamente!");
     } catch(error) {
-        res.status(500).send( {message: "Error en el servidor", payload: error});
+        res.status(500).send( {message: "Error en el servidor", payload: error.message});
     }
 })
 
-export default router;  
+export default router;

@@ -1,0 +1,16 @@
+<div class="chat">
+    <h1>Chat en tiempo real</h1>
+    <div id="chat-messages">
+        <!-- Aquí se mostrarán los mensajes -->
+        {{#each messages}}
+            <p><strong>{{this.user}} dice:</strong> <strong> {{this.message}} </strong></p>
+        {{/each}}
+    </div>
+    <div>
+        <input type="text" id="user-input" placeholder="Tu nombre">
+        <input type="text" id="message-input" placeholder="Escribe un mensaje">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+</div>  
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat.js"></script>

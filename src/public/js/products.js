@@ -32,34 +32,32 @@ form.addEventListener('submit', async (event) => {
     form.reset();
 });
 
-socket.on('updateProducts', (updatedProducts) => {
-    console.log(updatedProducts);
-    productList.innerHTML = ''; 
+socket.on('newProducts', (products) => {
+    const productList = document.getElementById("productList");
+    productList.innerHTML = ''; // Borra el contenido actual
 
-    updatedProducts.forEach((product) => {
-        // Crea elementos HTML para mostrar los productos
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <h1>${product.title}</h1>
-            <p>Descripción: ${product.description}</p>
-            <p>Precio: $${product.price}</p>
-            <p>Categoría: ${product.category}</p>
-            <p>Código: ${product.code}</p>
-            <p>Estado: ${product.status ? 'Disponible' : 'No disponible'}</p>
-            <p>Stock: ${product.stock}</p>
-            <h2>Miniaturas:</h2>
-            <ul>
-                ${product.thumbnail.map((thumb) => `<li><img src="${thumb}" alt="Miniatura"></li>`).join('')}
-            </ul>
+    for (let product of products.products) {
+        const productItem = `
+            <div class="product">
+                <h1>${product.title}</h1>
+                <p>Descripción: ${product.description}</p>
+                <p>Precio: $${product.price}</p>
+                <p>Categoría: ${product.category}</p>
+                <p>Código: ${product.code}</p>
+                <p>Estado: ${product.status ? 'Disponible' : 'No disponible'}</p>
+                <p>Stock: ${product.stock}</p>
+                <div class="images">
+                    <h2>Miniaturas:</h2>
+                    ${product.thumbnail.map((thumb) => `<img src="${thumb}" alt="Miniatura">`).join('')}
+                </div>
+            </div>
         `;
-        productList.appendChild(li);
-    });
+        productList.innerHTML += productItem;
+    }
 });
-
 delProductForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(delProductForm);
-    const productId = parseInt( formData.get('productId'));
-    console.log(productId);
+    const productId = formData.get('productId');
     socket.emit('delProduct', productId);
 })
