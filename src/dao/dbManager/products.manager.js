@@ -11,7 +11,34 @@ class ProductsManager {
         this.status = status;
         this.stock = stock;
     }
-
+    async getByQueries(query, options, req) {
+        try {
+            if (!query) {
+                query = '';
+            }
+            console.log(query)
+            let result = {};
+            result = await ProductsModel.paginate(query, options);
+            const products = result.docs.map((product) => product.toObject());
+            
+            const response = {
+                status: 'success',
+                payload: products,
+                totalPages: result.totalPages,
+                prevPage: result.hasPrevPage ? result.page - 1 : null,
+                nextPage: result.hasNextPage ? result.page + 1 : null,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevLink: result.hasPrevPage ? `${req.baseUrl}?query=${query}&page=${result.page - 1}&limit=${options.limit}` : null,
+                nextLink: result.hasNextPage ? `${req.baseUrl}?query=${query}&page=${result.page + 1}&limit=${options.limit}` : null
+            };
+    
+            return response;
+        } catch (error) {
+            throw new Error('Error al obtener productos: ' + error);
+        }
+    }
     async getAll() {
         try {
             const products = await ProductsModel.find();
@@ -59,6 +86,13 @@ class ProductsManager {
         } catch (error) {
             console.log(error)
             throw new Error("Error al eliminar el producto");
+        }
+    }
+    async saveMany(products) {
+        try {
+            return await ProductsModel.insertMany(products);
+        } catch ( error ) {
+            throw error;
         }
     }
 }

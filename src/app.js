@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import messagesRouter from './routes/messages.router.js';
 import { MessagesManager } from "./dao/dbManager/messages.manager.js";
-const uri = "mongodb+srv://CarlosOlivera:UbivgxwgeHeqtRRU@cluster0.ddubnhh.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://CarlosOlivera:UbivgxwgeHeqtRRU@cluster0.ddubnhh.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 const port = 8080;
 const app = express();
