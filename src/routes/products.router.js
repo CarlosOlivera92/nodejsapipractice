@@ -162,7 +162,6 @@ const productsList = [
 router.get('/', async (req, res) => {
     try {
         let { limit, page, sort, query } = req.query;
-        await manager.saveMany(productsList)
         const options = {
             page: parseInt(page) || 1,
             limit: parseInt(limit) || 10,

@@ -1,7 +1,48 @@
+
+
 const socket = io();
 const form = document.getElementById('form');
 const delProductForm = document.getElementById('delProductForm');
 const productList = document.getElementById('product-list');
+
+// Inicializa el cartId desde el localStorage al cargar la página
+let cartId = localStorage.getItem('cartId') || null;
+
+const viewProductsDetails = (productId) => {
+    window.location.href = `/products/${productId}`;
+}
+
+const addToCart = async (productId) => {
+    const data = {
+        productId: productId,
+        cartId: cartId
+    };
+    fetch('/api/carts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(async (response) => {
+        if (response.status === 201 || response.status === 200) {
+            return response.json();
+        }
+        throw new Error('Error al agregar el producto al carrito');
+    })
+    .then((data) => {
+        alert('Producto añadido al carrito correctamente');
+        cartId = data.data; 
+        localStorage.setItem('cartId', cartId); 
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Error al agregar el producto al carrito');
+        alert(cartId)
+    });
+}
+
+
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();

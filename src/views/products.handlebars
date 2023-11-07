@@ -1,0 +1,19 @@
+<h1>Lista de Productos</h1>
+
+<div class="products d-flex flex-column">
+    {{#each products.payload}}
+    <div class="product m-3 p-3 ">
+        <p> Titulo {{this.title}}</p>
+        <p> Categoria: {{this.category}} </p>
+        <p> Precio: {{this.price}} </p>
+        <button class="btn btn-primary" onclick="viewProductDetails('{{this._id}}')"><a class="text-light" href="/products/{{this._id}}">Ver Detalles</a>
+</button>
+        <button class="btn btn-secondary" onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+    </div>
+    {{/each}}
+    {{#if products.hasNextPage}}
+        <a href="{{products.nextLink}}">Página siguiente</a>
+    {{/if}}
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/products.js"></script>

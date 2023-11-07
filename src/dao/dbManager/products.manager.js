@@ -13,10 +13,9 @@ class ProductsManager {
     }
     async getByQueries(query, options, req) {
         try {
-            if (!query) {
+            if (Object.keys(query).length === 0) {
                 query = '';
             }
-            console.log(query)
             let result = {};
             result = await ProductsModel.paginate(query, options);
             const products = result.docs.map((product) => product.toObject());

@@ -24,28 +24,52 @@ router.get('/:cid', async(req,res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { productId } = req.body;
-        const id = new ObjectId(productId)
+        const { productId, cartIdObj } = req.body;
+        const id = new ObjectId(productId);
         const product = await productManager.getOne(id);
+        let cartId;
+        if (cartIdObj != null && cartIdObj !== "") {
+            cartId = new ObjectId(cartIdObj);
+        }
+        console.log(cartId)
+        console.log(typeof(cartId))
         if (product !== "Producto no encontrado") {
-            const productInCart = {
-                productId: product._id,
-                quantity: 1,
-            };
-    
-            const newCart = {
-                products: [productInCart],
-            };
-            await cartManager.save(newCart)
-            res.status(201).send('Se ha creado un nuevo carrito y se ha agregado el producto.');
+            if (cartId) {
+                const existingCart = await cartManager.getOne(cartId);
+                if (existingCart) {
+                    existingCart.products.push({
+                        productId: product._id,
+                        quantity: 1,
+                    });
+
+                    await cartManager.update(cartId, existingCart);
+                    res.status(200).send({message: 'Se ha agregado el producto al carrito existente.', data: existingCart});
+                } else {
+                    res.status(404).send('El carrito especificado no se encontró.');
+                }
+            } else {
+                const productInCart = {
+                    productId: product._id,
+                    quantity: 1,
+                };
+                const newCart = {
+                    products: [productInCart],
+                };
+
+                // Guarda el carrito y obtén el ID del carrito recién creado.
+                const createdCart = await cartManager.save(newCart);
+                const createdCartId = createdCart._id;
+
+                res.status(201).send({message: `Se ha creado un nuevo carrito con ID: ${createdCartId} y se ha agregado el producto.`, data: createdCartId});
+            }
         } else {
-            res.status(404).send("No se ha podido encontrar el producto especificado");
+            res.status(404).send("No se ha podido encontrar el producto especificado.");
         }
     } catch (error) {
-      res.status(500).send("Ha habido un error en el servidor " + error);
+        res.status(500).send("Ha habido un error en el servidor " + error);
     }
 });
-  
+
 // Endpoint para actualizar la cantidad de ejemplares de un producto en el carrito
 router.put('/:cid/products/:pid', async (req, res) => {
 

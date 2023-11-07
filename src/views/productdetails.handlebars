@@ -1,0 +1,11 @@
+<div class="product-details p-4 m-4">
+    <h2>{{product.title}}</h2>
+    <p> Descripcion: {{product.description}} </p>
+    <p> Categoria: {{product.category}} </p>
+    <p> Precio: {{product.price}} </p>
+    <p> Disponibilidad: {{product.status}} </p>
+    <p> Stock: {{product.stock}} </p>
+    <button class="btn btn-primary" onclick="addToCart('{{product._id}}')">Agregar al Carrito</button>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/products.js"></script>
