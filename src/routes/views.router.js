@@ -5,13 +5,24 @@ import { productsFilePath } from "../utils.js";
 import { MessagesManager } from "../dao/dbManager/messages.manager.js";
 import { toPascalCase } from "../utils.js";
 import { ObjectId } from "mongodb";
+import { CartsManager } from "../dao/dbManager/carts.manager.js";
 
 const router = Router();
+const cartManager = new CartsManager();
 const manager = new ProductsManager();
 const messagesManager = new MessagesManager()
 router.get('/', async(req,res) => {
     const products = await manager.getAll();
     res.render('home', {products: products});
+})
+router.get('/carts/:cid', async(req,res) => {
+    const cartId = new ObjectId(req.params.cid);
+    const cart = await cartManager.getOne(cartId);
+    let products = []
+    for (let i of cart.products) {
+        products.push(i)
+    }
+    res.render('cart', {cart: products});
 })
 router.get('/chat', async(req,res) => {
     const messages = await messagesManager.getAll();
