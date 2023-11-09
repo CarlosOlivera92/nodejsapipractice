@@ -30,6 +30,7 @@ class CartsManager {
     }
     getOne = async(cartId) => {
         try {
+            console.log(cartId);
             const cart = await CartsModel.findOne({_id: cartId}).populate('products.productId', '_id title category price');
             return cart;
         } catch (error) {

@@ -6,8 +6,9 @@
         <p> Titulo {{this.title}}</p>
         <p> Categoria: {{this.category}} </p>
         <p> Precio: {{this.price}} </p>
+        <p> ID: {{this._id}} </p>
         <button class="btn btn-primary" onclick="viewProductDetails('{{this._id}}')"><a class="text-light" href="/products/{{this._id}}">Ver Detalles</a>
-</button>
+        </button>
         <button class="btn btn-secondary" onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
     </div>
     {{/each}}

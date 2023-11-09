@@ -7,6 +7,7 @@ const productList = document.getElementById('product-list');
 
 // Inicializa el cartId desde el localStorage al cargar la página
 let cartId = localStorage.getItem('cartId') || null;
+console.log(typeof(cartId))
 
 const viewProductsDetails = (productId) => {
     window.location.href = `/products/${productId}`;
@@ -32,8 +33,11 @@ const addToCart = async (productId) => {
     })
     .then((data) => {
         alert('Producto añadido al carrito correctamente');
-        cartId = data.data; 
-        localStorage.setItem('cartId', cartId); 
+        if(cartId == null) {
+            cartId = data.data; 
+            localStorage.setItem('cartId', cartId); 
+        } 
+        console.log(cartId);
     })
     .catch((error) => {
         console.error('Error:', error);

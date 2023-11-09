@@ -24,18 +24,20 @@ router.get('/:cid', async(req,res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { productId, cartIdObj } = req.body;
+        const { productId, cartId } = req.body;
         const id = new ObjectId(productId);
         const product = await productManager.getOne(id);
-        let cartId;
-        if (cartIdObj != null && cartIdObj !== "") {
-            cartId = new ObjectId(cartIdObj);
+        let newCartId;
+        if (cartId != null && cartId != "undefined") {
+            console.log("******************")
+            newCartId = new ObjectId(cartId);
+            console.log(newCartId)
+            console.log("******************")
         }
-        console.log(cartId)
-        console.log(typeof(cartId))
+
         if (product !== "Producto no encontrado") {
-            if (cartId) {
-                const existingCart = await cartManager.getOne(cartId);
+            if (newCartId) {
+                const existingCart = await cartManager.getOne(newCartId);
                 if (existingCart) {
                     existingCart.products.push({
                         productId: product._id,
