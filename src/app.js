@@ -10,6 +10,9 @@ import { ProductsManager } from "./dao/dbManager/products.manager.js";
 import mongoose from "mongoose";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import messagesRouter from './routes/messages.router.js';
+import authRouter from "./routes/auth.router.js";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 import { MessagesManager } from "./dao/dbManager/messages.manager.js";
 const uri = "mongodb+srv://CarlosOlivera:UbivgxwgeHeqtRRU@cluster0.ddubnhh.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
@@ -30,12 +33,6 @@ app.set('view engine', 'handlebars');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//Routes
-app.use('/api/chat', messagesRouter);
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-app.use('/', viewsRouter);
-
 try{
     //Conectar BBDD
     await mongoose.connect(uri);
@@ -43,6 +40,25 @@ try{
 } catch (error) {
     console.log(error.message)
 }
+//Configuración de sesión
+app.use(session({
+    store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+        ttl: 3000
+    }),
+    secret: "Coder256SecretKey",
+    resave: true,
+    saveUninitialized: true,
+}))
+
+//Routes
+app.use('/api/chat', messagesRouter);
+app.use('/api/auth', authRouter);
+
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
+app.use('/', viewsRouter);
+
 //Levantar servidor
 const server = app.listen(8080, () => {
     console.log(` listening on port: ${port}`);
