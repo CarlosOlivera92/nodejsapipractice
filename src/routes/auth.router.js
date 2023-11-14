@@ -69,7 +69,7 @@ router.post("/login", async(req, res) => {
             name: `${user.first_name} ${user.last_name}`,
             email: user.email,
             age: user.age,
-
+            role: user.role
         };
         res.json({ status: 'success', message: 'Login Exitoso!' });
     } catch (error) {
