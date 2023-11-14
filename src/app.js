@@ -47,8 +47,8 @@ app.use(session({
         ttl: 3000
     }),
     secret: "Coder256SecretKey",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
 }))
 
 //Routes

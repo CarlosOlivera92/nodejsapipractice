@@ -80,6 +80,7 @@ router.post("/login", async(req, res) => {
 router.get('/logout', (req, res) => {
     req.session.destroy(error => {
         if(error) return res.status(500).send({ status: 'error', message: error.message });
+        res.clearCookie('connect.sid');
         res.redirect('/login');
     })
 })

@@ -1,14 +1,24 @@
-<div>
+<div class="signup-form container p-4">
     <h1>Login</h1>
-    <form id="loginForm">
-        <label>Email</label>
-        <input name="email">
-        <br/>
-        <label>Contraseña</label>
-        <input name="password" type="password">
-        <br/>
-        <input type="submit">
+    <form id="loginForm" class="form">
+        <div class="row">
+            <div class="form-section">
+                <div class="form-item">
+                    <label>Email</label>
+                    <input name="email">
+                </div>
+            </div>
+            <div class="form-section">
+                <div class="form-item">
+                    <label>Contraseña</label>
+                    <input name="password" type="password">
+                </div>
+            </div>
+        </div>
+        <div class="buttons my-3">
+            <button type="submit" class="btn form-button">Iniciar Sesión</button>
+        </div>
     </form>
-    <p>No estas registrado? <a href="/register">Registrate aquí</a></p>
+    <p>No estás registrado? <a href="/register">Regístrate aquí</a></p>
 </div>
 <script src="/js/login.js"></script>

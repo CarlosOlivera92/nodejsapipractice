@@ -30,16 +30,11 @@ router.get('/login', publicAccess, (req, res) => {
     res.render('login')
 });
 
-router.get('/', privateAccess, (req, res) => {
-    res.render('profile', {
-        user: req.session.user
-    })
-});
-
-router.get('/', async(req,res) => {
+router.get('/', privateAccess, async (req, res) => {
+    console.log(req.session.user)
     const products = await manager.getAll();
-    res.render('home', {products: products});
-})
+    res.render('home', { layout:'main', products: products, user: req.session.user });
+});
 router.get('/carts/:cid', async(req,res) => {
     const cartId = new ObjectId(req.params.cid);
     const cart = await cartManager.getOne(cartId);
@@ -47,15 +42,15 @@ router.get('/carts/:cid', async(req,res) => {
     for (let i of cart.products) {
         products.push(i)
     }
-    res.render('cart', {cart: products});
+    res.render('cart', {cart: products, user:req.session.user});
 })
 router.get('/chat', async(req,res) => {
     const messages = await messagesManager.getAll();
-    res.render('chat', {messages: messages});
+    res.render('chat', {messages: messages, user:req.session.user});
 })
 router.get('/realtimeproducts', async(req,res) => {
     const products = await manager.getAll();
-    res.render('realtimeproducts', {products: products});
+    res.render('realtimeproducts', {products: products, user:req.session.user});
 })
 router.get("/products", async(req, res) => {
     let { limit, page, sort, query } = req.query;
@@ -86,12 +81,12 @@ router.get("/products", async(req, res) => {
     }
 
     const products = await manager.getByQueries(filter, options, req);
-    console.log(products.payload)
-    res.render("products", {products: products})
+    console.log(req.session.user)
+    res.render("products", {products: products, user: req.session.user})
 })
 router.get("/products/:productId", async (req, res) => {
     const productId = new ObjectId( req.params.productId );
     const productDetails = await manager.getOne(productId);
-    res.render("productdetails", { product: productDetails });
+    res.render("productdetails", { product: productDetails, user: req.session.user });
 });
 export default router;

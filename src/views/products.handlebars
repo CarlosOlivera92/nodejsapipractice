@@ -1,17 +1,24 @@
-<h1>Lista de Productos</h1>
 
-<div class="products d-flex flex-column">
-    {{#each products.payload}}
-    <div class="product m-3 p-3 ">
-        <p> Titulo {{this.title}}</p>
-        <p> Categoria: {{this.category}} </p>
-        <p> Precio: {{this.price}} </p>
-        <p> ID: {{this._id}} </p>
-        <button class="btn btn-primary" onclick="viewProductDetails('{{this._id}}')"><a class="text-light" href="/products/{{this._id}}">Ver Detalles</a>
-        </button>
-        <button class="btn btn-secondary" onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+<div class="greetings container-fluid p-4">
+    <p>Bienvenido, {{{user.name}}}! </p>
+</div>
+
+<div class="products container-fluid d-flex flex-column align-items-center justify-content-center">
+    <h1>Lista de Productos</h1>
+    <div class="row row-cols-md-4 align-items-center justify-content-center">
+        {{#each products.payload}}
+        <div class="product col-md-4 p-3 ">
+            <p> Titulo {{this.title}}</p>
+            <p> Categoria: {{this.category}} </p>
+            <p> Precio: {{this.price}} </p>
+            <p> ID: {{this._id}} </p>
+            <button class="btn btn-primary" onclick="viewProductDetails('{{this._id}}')"><a class="text-light" href="/products/{{this._id}}">Ver Detalles</a>
+            </button>
+            <button class="btn btn-secondary" onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+        </div>
+        {{/each}}
     </div>
-    {{/each}}
+
     {{#if products.hasNextPage}}
         <a href="{{products.nextLink}}">Página siguiente</a>
     {{/if}}
