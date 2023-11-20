@@ -21,6 +21,13 @@ class UsersManager {
             throw new Error( error )
         }
     }
+    findById = async(id) => {
+        try {
+            return await UsersModel.findById(id);
+        } catch (error) {
+            return error;
+        }
+    }
     saveOne = async(user) => {
         try {
             return await UsersModel.create(user);

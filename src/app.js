@@ -14,6 +14,8 @@ import authRouter from "./routes/auth.router.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import { MessagesManager } from "./dao/dbManager/messages.manager.js";
+import { initializePassport } from "./config/passport.config.js";
+import passport from "passport";
 const uri = "mongodb+srv://CarlosOlivera:UbivgxwgeHeqtRRU@cluster0.ddubnhh.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 const port = 8080;
@@ -49,7 +51,11 @@ app.use(session({
     secret: "Coder256SecretKey",
     resave: false,
     saveUninitialized: false,
-}))
+}));
+//Passport config
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Routes
 app.use('/api/chat', messagesRouter);
