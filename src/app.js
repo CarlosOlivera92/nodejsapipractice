@@ -1,6 +1,7 @@
 import express from "express";
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
+import sessionsRouter from './routes/sessions.router.js';
 import handlebars from 'express-handlebars';
 import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
@@ -63,6 +64,7 @@ app.use('/api/auth', authRouter);
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
+app.use('/api/sessions', sessionsRouter);
 app.use('/', viewsRouter);
 
 //Levantar servidor

@@ -2,7 +2,7 @@ import passport from "passport";
 import local from 'passport-local';
 import { hashPassword, comparePasswords } from "../bcryptUtils.js"; 
 import { UsersManager } from '../dao/dbManager/users.manager.js';
-
+import GithubStrategy from 'passport-github';
 const LocalStrategy = local.Strategy;
 const usersManager = new UsersManager();
 
@@ -52,6 +52,35 @@ const initializePassport = () => {
             }
 
             return done(null, user);
+        } catch (error) {
+            return done(error);
+        }
+    }));
+    passport.use('github', new GithubStrategy( {
+        clientID:'Iv1.533d45cc3cdf1377',
+        clientSecret: 'ca405ba7b5462f2e314de5cd6d4317c8c1547a15',
+        callbackURL: 'http://localhost:8080/api/sessions/github-callback'
+    }, async(accessToken, refreshToken, profile, done) => {
+        try {
+            console.log(profile);
+            const options = {
+                email: profile._json.email
+            };
+            const user = await usersManager.getOne( options );
+            if (!user) {
+                let newUser = {
+                    firstName:profile._json.name,
+                    lastName: '',
+                    age: 18,
+                    email: profile._json.email,
+                    role: "USER",
+                    password: ''
+                };
+                let result = await usersManager.saveOne(newUser);
+                return done(null, result);
+            } else {
+                return done(null, user);
+            }
         } catch (error) {
             return done(error);
         }
