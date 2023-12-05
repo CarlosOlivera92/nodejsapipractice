@@ -16,6 +16,8 @@ import MongoStore from "connect-mongo";
 import { MessagesManager } from "./dao/dbManager/messages.manager.js";
 import { initializePassport } from "./config/passport.config.js";
 import passport from "passport";
+import cookieParser from 'cookie-parser';
+
 const uri = "mongodb+srv://CarlosOlivera:UbivgxwgeHeqtRRU@cluster0.ddubnhh.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 const port = 8080;
@@ -55,6 +57,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
+// Cookie Parser 
+app.use(cookieParser());
+
 //Passport config
 initializePassport();
 app.use(passport.initialize());

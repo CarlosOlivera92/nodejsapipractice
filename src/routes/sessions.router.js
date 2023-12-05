@@ -9,5 +9,7 @@ router.get('/github-callback', passport.authenticate('github', {failureRedirect:
     req.session.user = req.user;
     res.redirect('/products');
 })
-
+router.get('/current', passport.authenticate('current', { session: false }), (req, res) => {
+    res.json({ user: req.user });
+});
 export default router;

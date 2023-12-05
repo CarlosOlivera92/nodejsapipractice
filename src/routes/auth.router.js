@@ -32,7 +32,8 @@ export default class AuthRouter extends Router{
                 return res.status(401).send({ status: 'error', message: 'Credenciales inválidas' });
             }
             const generatedToken = generateToken(user);
-            console.log(user)
+            res.cookie('jwtToken', generatedToken, { httpOnly: true }); // Aquí configuras las opciones de la cookie según tu necesidad
+
             req.session.user = {
                 name: `${user.first_name} ${user.last_name}`,
                 email: user.email,

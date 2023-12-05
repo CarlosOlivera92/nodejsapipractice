@@ -29,15 +29,15 @@ const initializePassport = () => {
                 return done("User already exists"); // Enviar un error al callback
             }
             const userToSave = {
-                firstName,
-                lastName,
+                first_name: firstName,
+                last_name: lastName,
                 age,
                 email: username,
                 role: "USER",
                 password: await hashPassword(password)
             }
             if (username === "adminCoder@coder.com") {
-                newUser.role = "ADMIN"
+                userToSave.role = "ADMIN"
             }
             const result = await usersManager.saveOne(userToSave);
             return done(null, result);
@@ -76,8 +76,9 @@ const initializePassport = () => {
             };
             const user = await usersManager.getOne( options );
             if (!user) {
+                console.log(profile._json)
                 let newUser = {
-                    firstName:profile._json.name,
+                    first_name:profile._json.name,
                     lastName: '',
                     age: 18,
                     email: profile._json.email,
@@ -106,9 +107,9 @@ const initializePassport = () => {
     passport.use('current', new JWTSrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([
             ExtractJWT.fromAuthHeaderAsBearerToken(),
-            ExtractJWT.fromUrlQueryParameter('token'),
             (req) => {
                 let token = null;
+
                 if (req && req.cookies) {
                     token = req.cookies.jwtToken;
                 }
@@ -118,12 +119,13 @@ const initializePassport = () => {
         secretOrKey: PRIVATE_KEY_JWT
     }, async (jwt_payload, done) => {
         try {
+
             // Aquí puedes obtener el usuario asociado al token JWT en la cookie
-            const user = await usersManager.getOne(jwt_payload.user_id); // Cambia esto por tu lógica para obtener el usuario desde la base de datos
+            const user = await usersManager.getOne(jwt_payload.user_id); 
             if (!user) {
-                return done(null, false); // Usuario no encontrado
+                return done(null, false);
             }
-            return done(null, user); // Devolver el usuario asociado al token
+            return done(null, user); 
         } catch (error) {
             return done(error);
         }
