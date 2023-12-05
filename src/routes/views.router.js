@@ -1,4 +1,3 @@
-import { Router } from "express";
 // import { ProductManager } from "../public/shared/classes/product-manager.js";
 import { ProductsManager } from "../dao/dbManager/products.manager.js";
 import { productsFilePath } from "../utils.js";
@@ -6,87 +5,90 @@ import { MessagesManager } from "../dao/dbManager/messages.manager.js";
 import { toPascalCase } from "../utils.js";
 import { ObjectId } from "mongodb";
 import { CartsManager } from "../dao/dbManager/carts.manager.js";
+import Router from "./router.js";
+import { accessRolesEnum, passportStrategiesEnum } from "../config/enums.js";
 
-const router = Router();
-const cartManager = new CartsManager();
-const manager = new ProductsManager();
-const messagesManager = new MessagesManager()
-
-const publicAccess = (req, res, next) => {
-    if(req.session?.user) return res.redirect('/');
-    next();
-}
-
-const privateAccess = (req, res, next) => {
-    if(!req.session?.user) return res.redirect('/login');
-    next();
-}
-
-router.get('/register', publicAccess, (req, res) => {
-    res.render('register')
-});
-
-router.get('/login', publicAccess, (req, res) => {
-    res.render('login')
-});
-
-router.get('/', privateAccess, async (req, res) => {
-    console.log(req.session.user)
-    const products = await manager.getAll();
-    res.render('home', { layout:'main', products: products, user: req.session.user });
-});
-router.get('/carts/:cid', async(req,res) => {
-    const cartId = new ObjectId(req.params.cid);
-    const cart = await cartManager.getOne(cartId);
-    let products = []
-    for (let i of cart.products) {
-        products.push(i)
+export default class ViewsRouter extends Router {
+    constructor() {
+        super();
+        this.cartsManager = new CartsManager();
+        this.productsManager = new ProductsManager();
+        this.messagesManager = new MessagesManager();
     }
-    res.render('cart', {cart: products, user:req.session.user});
-})
-router.get('/chat', async(req,res) => {
-    const messages = await messagesManager.getAll();
-    res.render('chat', {messages: messages, user:req.session.user});
-})
-router.get('/realtimeproducts', async(req,res) => {
-    const products = await manager.getAll();
-    res.render('realtimeproducts', {products: products, user:req.session.user});
-})
-router.get("/products", async(req, res) => {
-    let { limit, page, sort, query } = req.query;
-    const options = {
-        page: parseInt(page) || 1,
-        limit: parseInt(limit) || 10,
-        sort: " "
-    };
-    const filter = {};
+    init() {
+        this.get('/login', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.login);
+        this.get('/register', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.register);
+        this.get('/', [accessRolesEnum.ADMIN, accessRolesEnum.USER], passportStrategiesEnum.NOTHING, this.getAllProducts);
+        this.get('/carts/:cid', [accessRolesEnum.ADMIN, accessRolesEnum.USER], passportStrategiesEnum.NOTHING, this.cart);
+        this.get('/chat', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.chat);
+        this.get('/realtimeproducts', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.realtimeProducts);
+        this.get("/products", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.products);
+        this.get("/products/:productId", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.getProductDetails);
 
-    if (query) {
-        query = toPascalCase(query)
-        filter.$or = [];
+    }
+    async login(req, res) {
+        res.render('login');
+    }
+    async register(req, res) {
+        res.render('register');
+    }
+    async getAllProducts(req, res) {
+        console.log(req.session.user)
+        const products = await this.productsManager.getAll();
+        res.render('home', { layout:'main', products: products, user: req.session.user });
+    }
+    async cart(req, res) {
+        const cartId = new ObjectId(req.params.cid);
+        const cart = await this.cartsManager.getOne(cartId);
+        let products = []
+        for (let i of cart.products) {
+            products.push(i)
+        }
+        res.render('cart', {cart: products, user:req.session.user});
+    }
+    async chat(req, res) {
+        const messages = await this.messagesManager.getAll();
+        res.render('chat', {messages: messages, user:req.session.user});
+    }
+    async realtimeProducts(req, res) {
+        const products = await this.productsManager.getAll();
+        res.render('realtimeproducts', {products: products, user:req.session.user});
+    }
+    async products(req, res) {
+        let { limit, page, sort, query } = req.query;
+        const options = {
+            page: parseInt(page) || 1,
+            limit: parseInt(limit) || 10,
+            sort: " "
+        };
+        const filter = {};
     
-        if (query.toLowerCase() !== 'true' && query.toLowerCase() !== 'false') {
-            filter.$or.push({ category: query });
+        if (query) {
+            query = toPascalCase(query)
+            filter.$or = [];
+        
+            if (query.toLowerCase() !== 'true' && query.toLowerCase() !== 'false') {
+                filter.$or.push({ category: query });
+            }
+        
+            if (query.toLowerCase() === 'true' || query.toLowerCase() === 'false') {
+                filter.$or.push({ status: query.toLowerCase() === 'true' });
+            }
+        } else {
+            query = ' ';
+        }
+        if (sort === 'asc') {
+            options.sort = { price: 1 }; 
+            options.sort = { price: -1 }; 
         }
     
-        if (query.toLowerCase() === 'true' || query.toLowerCase() === 'false') {
-            filter.$or.push({ status: query.toLowerCase() === 'true' });
-        }
-    } else {
-        query = ' ';
+        const products = await this.productsManager.getByQueries(filter, options, req);
+        console.log(req.session.user)
+        res.render("products", {products: products, user: req.session.user})
     }
-    if (sort === 'asc') {
-        options.sort = { price: 1 }; 
-        options.sort = { price: -1 }; 
+    async getProductDetails(req, res) {
+        const productId = new ObjectId( req.params.productId );
+        const productDetails = await this.productsManager.getOne(productId);
+        res.render("productdetails", { product: productDetails, user: req.session.user });
     }
-
-    const products = await manager.getByQueries(filter, options, req);
-    console.log(req.session.user)
-    res.render("products", {products: products, user: req.session.user})
-})
-router.get("/products/:productId", async (req, res) => {
-    const productId = new ObjectId( req.params.productId );
-    const productDetails = await manager.getOne(productId);
-    res.render("productdetails", { product: productDetails, user: req.session.user });
-});
-export default router;
+}

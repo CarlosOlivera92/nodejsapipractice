@@ -16,7 +16,17 @@ const usersSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: rolesEnum,
-        default: 'users', 
+        default: 'USER', 
+    },
+    cart: {
+        type: [
+            {
+                cart: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'carts'
+                }
+            }
+        ]
     },
     password: String
 });

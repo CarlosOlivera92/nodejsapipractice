@@ -3,6 +3,14 @@ import local from 'passport-local';
 import { hashPassword, comparePasswords } from "../bcryptUtils.js"; 
 import { UsersManager } from '../dao/dbManager/users.manager.js';
 import GithubStrategy from 'passport-github';
+
+import jwt from 'passport-jwt';
+import { passportStrategiesEnum } from "./enums.js";
+import { PRIVATE_KEY_JWT } from "./constants.js";
+
+const JWTSrategy = jwt.Strategy;
+const ExtractJWT = jwt.ExtractJwt;
+
 const LocalStrategy = local.Strategy;
 const usersManager = new UsersManager();
 
@@ -18,7 +26,7 @@ const initializePassport = () => {
             };
             const userExists = await usersManager.getOne(options);
             if (userExists) {
-                return res.status(400).send( {status: "error", message: `El usuario con el email ${email} ya existe en el sistema.`} )
+                return done("User already exists"); // Enviar un error al callback
             }
             const userToSave = {
                 firstName,
@@ -84,7 +92,42 @@ const initializePassport = () => {
         } catch (error) {
             return done(error);
         }
-    } ))
+    }));
+    passport.use(passportStrategiesEnum.JWT, new JWTSrategy({
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey: PRIVATE_KEY_JWT
+    }, async(jwt_payload, done) => {
+        try {
+            return done(null, jwt_payload.user)//req.user
+        } catch (error) {
+            return done(error);
+        }
+    }));
+    passport.use('current', new JWTSrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([
+            ExtractJWT.fromAuthHeaderAsBearerToken(),
+            ExtractJWT.fromUrlQueryParameter('token'),
+            (req) => {
+                let token = null;
+                if (req && req.cookies) {
+                    token = req.cookies.jwtToken;
+                }
+                return token;
+            }
+        ]),
+        secretOrKey: PRIVATE_KEY_JWT
+    }, async (jwt_payload, done) => {
+        try {
+            // Aquí puedes obtener el usuario asociado al token JWT en la cookie
+            const user = await usersManager.getOne(jwt_payload.user_id); // Cambia esto por tu lógica para obtener el usuario desde la base de datos
+            if (!user) {
+                return done(null, false); // Usuario no encontrado
+            }
+            return done(null, user); // Devolver el usuario asociado al token
+        } catch (error) {
+            return done(error);
+        }
+    }));
     passport.serializeUser( (user, done) => {
         done(null, user._id);
     });

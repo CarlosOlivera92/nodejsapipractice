@@ -5,13 +5,12 @@ import sessionsRouter from './routes/sessions.router.js';
 import handlebars from 'express-handlebars';
 import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
-import viewsRouter from './routes/views.router.js';
-// import { ProductManager } from "./public/shared/classes/product-manager.js";
 import { ProductsManager } from "./dao/dbManager/products.manager.js";
 import mongoose from "mongoose";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import messagesRouter from './routes/messages.router.js';
-import authRouter from "./routes/auth.router.js";
+import AuthRouter from './routes/auth.router.js';
+import ViewsRouter from "./routes/views.router.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import { MessagesManager } from "./dao/dbManager/messages.manager.js";
@@ -23,6 +22,9 @@ const port = 8080;
 const app = express();
 const manager = new ProductsManager();
 const messagesManager = new MessagesManager;
+
+const authRouter = new AuthRouter();
+const viewsRouter = new ViewsRouter();
 console.log(__dirname)
 //Servidor archivos estaticos
 app.use(express.static(`${__dirname}/public`))
@@ -60,12 +62,12 @@ app.use(passport.session());
 
 //Routes
 app.use('/api/chat', messagesRouter);
-app.use('/api/auth', authRouter);
+app.use('/api/auth', authRouter.getRouter());
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/sessions', sessionsRouter);
-app.use('/', viewsRouter);
+app.use('/', viewsRouter.getRouter());
 
 //Levantar servidor
 const server = app.listen(8080, () => {
