@@ -1,18 +1,21 @@
 import passport from "passport";
 import local from 'passport-local';
 import { hashPassword, comparePasswords } from "../bcryptUtils.js"; 
-import { UsersManager } from '../dao/dbManager/users.manager.js';
 import GithubStrategy from 'passport-github';
 
 import jwt from 'passport-jwt';
 import { passportStrategiesEnum } from "./enums.js";
-import { PRIVATE_KEY_JWT } from "./constants.js";
+import config from "./config.js";
+import UsersRepository from "../repositories/users.repository.js";
+import { Users } from "../dao/factory.js";
 
 const JWTSrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
 
 const LocalStrategy = local.Strategy;
-const usersManager = new UsersManager();
+
+const usersDao = new Users();
+const usersRepository = new UsersRepository(usersDao);
 
 const initializePassport = () => {
     passport.use('register', new LocalStrategy( {
@@ -21,12 +24,17 @@ const initializePassport = () => {
     }, async(req, username, password, done) => {
         try {
             const {firstName, lastName, age} = req.body;
+
             const options = {
                 email: username
             };
-            const userExists = await usersManager.getOne(options);
+
+            // Verificar si el usuario ya existe en la base de datos
+            const userExists = await usersRepository.getOne(options);
+
+            // Si el usuario ya existe, devolver un error
             if (userExists) {
-                return done("User already exists"); // Enviar un error al callback
+                return done(null, false, { message: 'User already exists' });
             }
             const userToSave = {
                 first_name: firstName,
@@ -39,7 +47,7 @@ const initializePassport = () => {
             if (username === "adminCoder@coder.com") {
                 userToSave.role = "ADMIN"
             }
-            const result = await usersManager.saveOne(userToSave);
+            const result = await usersRepository.create(userToSave);
             return done(null, result);
         } catch ( error ) {
             return done(error);
@@ -48,11 +56,12 @@ const initializePassport = () => {
     passport.use('login', new LocalStrategy( {
         usernameField: 'email'
     }, async(username, password, done) => {
+        console.log("runing")
         try {
             const options = {
                 email: username
             };
-            const user = await usersManager.getOne( options )
+            const user = await usersRepository.getOne( options )
             const match = await comparePasswords(password, user.password);
 
             if (!user || !match) {
@@ -96,7 +105,7 @@ const initializePassport = () => {
     }));
     passport.use(passportStrategiesEnum.JWT, new JWTSrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: PRIVATE_KEY_JWT
+        secretOrKey: config.privateKey
     }, async(jwt_payload, done) => {
         try {
             return done(null, jwt_payload.user)//req.user
@@ -116,7 +125,7 @@ const initializePassport = () => {
                 return token;
             }
         ]),
-        secretOrKey: PRIVATE_KEY_JWT
+        secretOrKey: config.privateKey
     }, async (jwt_payload, done) => {
         try {
 

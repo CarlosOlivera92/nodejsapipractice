@@ -1,7 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url"; // Importa fileURLToPath desde el módulo url
 import jwt from 'jsonwebtoken';
-import { PRIVATE_KEY_JWT } from './config/constants.js';
+import config from "./config/config.js";
 // Convierte la URL actual en una ruta de archivo
 const __filename = fileURLToPath(import.meta.url);
 // Obtiene el directorio base
@@ -17,7 +17,7 @@ const toPascalCase = (string) => {
         });
 }
 const generateToken = (user) => {
-    const token = jwt.sign({ user }, PRIVATE_KEY_JWT, { expiresIn: '24h' });
+    const token = jwt.sign({ user }, config.privateKey, { expiresIn: '24h' });
     return token;
 }
 export {

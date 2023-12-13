@@ -18,7 +18,6 @@ import { initializePassport } from "./config/passport.config.js";
 import passport from "passport";
 import cookieParser from 'cookie-parser';
 
-const uri = "mongodb+srv://CarlosOlivera:UbivgxwgeHeqtRRU@cluster0.ddubnhh.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 const port = 8080;
 const app = express();
@@ -40,13 +39,7 @@ app.set('view engine', 'handlebars');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-try{
-    //Conectar BBDD
-    await mongoose.connect(uri);
-    console.log("db connected")
-} catch (error) {
-    console.log(error.message)
-}
+
 //Configuración de sesión
 app.use(session({
     store: MongoStore.create({

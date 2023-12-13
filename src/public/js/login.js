@@ -3,11 +3,10 @@ const form = document.getElementById('loginForm');
 form.addEventListener('submit', e => {
     e.preventDefault();
     const data = new FormData(form);
-    const obj = {};
-    // {
-    //     email: "asdasd",
-    //     password: "asdasd",
-    // }
+    data.forEach((value, key) => {
+        console.log(key, value);
+    });
+        const obj = {};
     data.forEach((value, key) => obj[key] = value);
     fetch('/api/auth/login', {
         method: 'POST',
@@ -18,6 +17,6 @@ form.addEventListener('submit', e => {
     }).then(result => {
         if (result.status === 200) {
             window.location.replace('/products');
-        }
+        } 
     })
 })
