@@ -4,6 +4,6 @@ export default class UsersDto {
         this.age = user.age;
         this.email = user.email;
         this.password = user.password;
-        this.role = user.role
+        this.role = user.role;
     }
 }

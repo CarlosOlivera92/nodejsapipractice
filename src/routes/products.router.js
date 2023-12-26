@@ -1,10 +1,8 @@
 import { Router } from "express";
 // import { ProductManager } from "../public/shared/classes/product-manager.js";
-import { ProductsManager } from "../dao/dbManager/products.manager.js";
 import { ObjectId } from "mongodb";
 import { toPascalCase } from "../utils.js";
 const router = Router();
-const manager = new ProductsManager();
 const productsList = [
     {
       "title": "Grand Theft Auto V",

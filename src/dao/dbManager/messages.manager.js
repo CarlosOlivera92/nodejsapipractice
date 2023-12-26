@@ -1,4 +1,3 @@
-import { MessagesModel } from "./models/messages.model.js";
 
 class MessagesManager {
     constructor() {}
@@ -27,4 +26,3 @@ class MessagesManager {
     }
 }
 
-export { MessagesManager };

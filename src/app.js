@@ -1,19 +1,17 @@
 import express from "express";
 import productsRouter from './routes/products.router.js';
-import cartsRouter from './routes/carts.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 import handlebars from 'express-handlebars';
 import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
-import { ProductsManager } from "./dao/dbManager/products.manager.js";
 import mongoose from "mongoose";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import messagesRouter from './routes/messages.router.js';
 import AuthRouter from './routes/auth.router.js';
 import ViewsRouter from "./routes/views.router.js";
+import CartsRouter from "./routes/carts.router.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import { MessagesManager } from "./dao/dbManager/messages.manager.js";
 import { initializePassport } from "./config/passport.config.js";
 import passport from "passport";
 import cookieParser from 'cookie-parser';
@@ -21,11 +19,11 @@ import cookieParser from 'cookie-parser';
 
 const port = 8080;
 const app = express();
-const manager = new ProductsManager();
-const messagesManager = new MessagesManager;
+
 
 const authRouter = new AuthRouter();
 const viewsRouter = new ViewsRouter();
+const cartsRouter = new CartsRouter();
 console.log(__dirname)
 //Servidor archivos estaticos
 app.use(express.static(`${__dirname}/public`))
@@ -63,7 +61,7 @@ app.use('/api/chat', messagesRouter);
 app.use('/api/auth', authRouter.getRouter());
 
 app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+app.use('/api/carts', cartsRouter.getRouter());
 app.use('/api/sessions', sessionsRouter);
 app.use('/', viewsRouter.getRouter());
 

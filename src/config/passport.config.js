@@ -83,7 +83,7 @@ const initializePassport = () => {
             const options = {
                 email: profile._json.email
             };
-            const user = await usersManager.getOne( options );
+            const user = await usersRepository.getOne( options );
             if (!user) {
                 console.log(profile._json)
                 let newUser = {
@@ -94,7 +94,7 @@ const initializePassport = () => {
                     role: "USER",
                     password: ''
                 };
-                let result = await usersManager.saveOne(newUser);
+                let result = await usersRepository.create(newUser);
                 return done(null, result);
             } else {
                 return done(null, user);
@@ -130,7 +130,7 @@ const initializePassport = () => {
         try {
 
             // Aquí puedes obtener el usuario asociado al token JWT en la cookie
-            const user = await usersManager.getOne(jwt_payload.user_id); 
+            const user = await usersRepository.getOne(jwt_payload.user_id); 
             if (!user) {
                 return done(null, false);
             }
@@ -143,7 +143,7 @@ const initializePassport = () => {
         done(null, user._id);
     });
     passport.deserializeUser( async(id, done) => {
-        const user = await usersManager.findById(id);
+        const user = await usersRepository.getOne(id);
         done(null, user);
     })
 

@@ -10,7 +10,7 @@ export default class AuthRouter extends Router{
     init() {
         this.post('/login', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.login(req, res, next));
         this.post('/register', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.register(req, res, next));
-        this.get('/', [accessRolesEnum.ADMIN], passportStrategiesEnum.NOTHING,  (req, res, next) => this.authController.getAllUsers(req, res, next));
+        this.get('/', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING,  (req, res, next) => this.authController.getAllUsers(req, res, next));
         this.get('/logout', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING,  (req, res, next) => this.authController.logout(req, res, next) )
     }
     

@@ -1,7 +1,5 @@
 import { Router } from "express";
-import { MessagesManager } from "../dao/dbManager/messages.manager.js";
 const router = Router();
-const messageManager = new MessagesManager();
 
 // Ruta para obtener todos los mensajes
 router.get('/', async (req, res) => {

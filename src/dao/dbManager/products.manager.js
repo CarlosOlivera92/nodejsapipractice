@@ -1,4 +1,3 @@
-import { ProductsModel } from "./models/products.model.js";
 
 class ProductsManager {
     constructor(title, description, price, thumbnail, category, code, status, stock) {
@@ -96,4 +95,3 @@ class ProductsManager {
     }
 }
 
-export { ProductsManager };

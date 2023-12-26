@@ -1,19 +1,14 @@
 // import { ProductManager } from "../public/shared/classes/product-manager.js";
-import { ProductsManager } from "../dao/dbManager/products.manager.js";
 import { productsFilePath } from "../utils.js";
-import { MessagesManager } from "../dao/dbManager/messages.manager.js";
 import { toPascalCase } from "../utils.js";
 import { ObjectId } from "mongodb";
-import { CartsManager } from "../dao/dbManager/carts.manager.js";
 import Router from "./router.js";
 import { accessRolesEnum, passportStrategiesEnum } from "../config/enums.js";
 
 export default class ViewsRouter extends Router {
     constructor() {
         super();
-        this.cartsManager = new CartsManager();
-        this.productsManager = new ProductsManager();
-        this.messagesManager = new MessagesManager();
+        
     }
     init() {
         this.get('/login', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.login);
