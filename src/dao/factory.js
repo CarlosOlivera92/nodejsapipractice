@@ -5,6 +5,7 @@ const persistence = config.persistence;
 let Users;
 let Carts;
 let Products;
+let Messages; 
 
 switch(persistence) {
     case 'MONGO':
@@ -20,11 +21,13 @@ switch(persistence) {
 
         const { default: ProductsMongo } = await import('../dao/dbManager/mongo/products.mongo.js');
         Products = ProductsMongo;
-
+        
+        const { default: MessagesMongo } = await import('../dao/dbManager/mongo/messages.mongo.js');
+        Messages = MessagesMongo;
         break;
     case 'MEMORY':
         console.log('Working with file system');
         break;
 }
 
-export { Users, Carts, Products };
+export { Users, Carts, Products, Messages };

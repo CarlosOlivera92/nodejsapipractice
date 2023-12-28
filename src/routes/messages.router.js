@@ -1,33 +1,15 @@
-import { Router } from "express";
-const router = Router();
+import { accessRolesEnum, passportStrategiesEnum } from "../config/enums.js";
+import MessagesController from "../controllers/messages.controller.js";
+import Router from "./router.js";
 
-// Ruta para obtener todos los mensajes
-router.get('/', async (req, res) => {
-    try {
-        const messages = await messageManager.getAll();
-        res.status(200).json({ status: "success", payload: messages });
-    } catch (error) {
-        res.status(500).json({ status: "error", message: error.message });
+export default class MessagesRouter extends Router {
+    constructor() {
+        super();
+        this.messagesController = new MessagesController();
     }
-});
-
-// Ruta para agregar un nuevo mensaje
-router.post('/', async (req, res) => {
-    try {
-        const { user, message } = req.body;
-        if (user && message) {
-            const newMessage = {
-                user: user,
-                message: message,
-            };
-            await messageManager.save(newMessage);
-            res.status(201).json({ status: "success", message: "Mensaje agregado exitosamente" });
-        } else {
-            res.status(400).json({ status: "error", message: "Los campos 'user' y 'message' son requeridos." });
-        }
-    } catch (error) {
-        res.status(500).json({ status: "error", message: "Error en el servidor: " + error.message });
+    init() {
+        this.get('/', [accessRolesEnum.USER], passportStrategiesEnum.JWT, (req, res, next) => this.messagesController.get(req, res, next));
+        this.post('/', [accessRolesEnum.USER], passportStrategiesEnum.JWT, (req, res, next) => this.messagesController.save(req, res, next));
     }
-});
+}
 
-export default router;

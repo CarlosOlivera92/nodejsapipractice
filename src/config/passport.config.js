@@ -56,7 +56,6 @@ const initializePassport = () => {
     passport.use('login', new LocalStrategy( {
         usernameField: 'email'
     }, async(username, password, done) => {
-        console.log("runing")
         try {
             const options = {
                 email: username
@@ -79,13 +78,11 @@ const initializePassport = () => {
         callbackURL: 'http://localhost:8080/api/sessions/github-callback'
     }, async(accessToken, refreshToken, profile, done) => {
         try {
-            console.log(profile);
             const options = {
                 email: profile._json.email
             };
             const user = await usersRepository.getOne( options );
             if (!user) {
-                console.log(profile._json)
                 let newUser = {
                     first_name:profile._json.name,
                     lastName: '',
@@ -104,15 +101,33 @@ const initializePassport = () => {
         }
     }));
     passport.use(passportStrategiesEnum.JWT, new JWTSrategy({
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        jwtFromRequest: ExtractJWT.fromExtractors([
+            ExtractJWT.fromAuthHeaderAsBearerToken(),
+            (req) => {
+                let token = null;
+                
+                if (req && req.cookies) {
+                    token = req.cookies.jwtToken; // Extraer el token de la cookie
+                }
+                return token;
+            }
+        ]),
         secretOrKey: config.privateKey
-    }, async(jwt_payload, done) => {
+    }, async (jwt_payload, done) => {
         try {
-            return done(null, jwt_payload.user)//req.user
+
+            const user = await usersRepository.getOne(jwt_payload.user.id); 
+
+            if (!user || (user.role !== 'USER' && user.role !== 'ADMIN')) {
+                return done(null, false);
+            }
+
+            return done(null, user); 
         } catch (error) {
             return done(error);
         }
     }));
+    
     passport.use('current', new JWTSrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([
             ExtractJWT.fromAuthHeaderAsBearerToken(),

@@ -76,13 +76,11 @@ export default class Router {
             //custom passport call
             passport.authenticate(strategy, function (err, user, info) {
                 if(err) return next(err);
-
-                if(!user) {
+                if (!user) {
                     return res.status(401).send({
-                        error: info.messages ? info.messages : info.toString()
-                    })
+                        error: info && info.messages ? info.messages : info ? info.toString() : 'Unauthorized'
+                    });
                 }
-
                 req.user = user;
                 next();
             })(req, res, next);
@@ -93,24 +91,39 @@ export default class Router {
 
     handlePolicies = (policies) => (req, res, next) => {
         // ['PUBLIC']
-        if(policies[0] === accessRolesEnum.PUBLIC) return next();
-        
+        if (policies[0] === accessRolesEnum.PUBLIC) return next();
+        console.log("-------------------------------")
+
         const user = req.user;
-
-        if(!policies.includes(user.role.toUpperCase()))
+        console.log(user.role )
+        // Verificar si req.user existe y tiene la propiedad 'role'
+        if (!user || !user.role || !(user.role === 'USER' || user.role === 'ADMIN')) {
             return res.status(403).json({ error: 'not permissions' });
-
+        }
+    
         next();
     }
-
+    authorize = (roles) => (req, res, next) => {
+        const user = req.user;
+    
+        if (!user || !user.role || !roles.includes(user.role)) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+    
+        next();
+    };
     applyCallbacks(callbacks) {
         //mapear los callbacks 1 a 1, obteniedo sus parámetros (req, res)
         return callbacks.map((callback) => async (...params) => {
             try {
-                //apply, va a ajecuttar la función callback, a la instancia de nuestra clase que es el router
+                // Verificar el tipo de callback aquí
+                console.log(callback)
+                console.log(typeof callback); // Agregar esta línea para depurar
+    
+                //apply, va a ejecutar la función callback, a la instancia de nuestra clase que es el router
                 await callback.apply(this, params);
             } catch (error) {
-                params[1].status(500).json({ status: 'error', message: error.message })
+                params[1].status(666).json({ status: '666', message: error.message })
             }
         }) //[req, res]
     }

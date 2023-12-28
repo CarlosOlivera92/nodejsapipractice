@@ -14,7 +14,11 @@
             </div>
             <div class="buttons">
                 {{#if user}}
+                    <a href="/products"><button class="btn">Home</button></a>
+                    <a href="/realtimeproducts"><button class="btn">Productos</button></a>
+                    <a href="/chat"><button class="btn">Chat</button></a>
                     <a href="/api/auth/logout"><button class="btn btn-danger">Salir</button></a>
+
                 {{else}}
                     <a href="/login"><button class="btn btn-primary">Iniciar sesión</button></a>
                     <a href="/register"><button class="btn btn-light">Registrarse</button></a>

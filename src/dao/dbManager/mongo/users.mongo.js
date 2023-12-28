@@ -22,6 +22,7 @@ export default class Users {
     }
     //GET ONE
     getOne = async(options) => {
-        return await UsersModel.findOne(options);
+        const filter = typeof options === 'string' ? { _id: options } : options;
+        return await UsersModel.findOne(filter);
     }
 }

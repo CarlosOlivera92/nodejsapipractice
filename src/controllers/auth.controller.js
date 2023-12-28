@@ -33,7 +33,6 @@ class AuthController {
             }
             const generatedToken = generateToken(user);
             res.cookie('jwtToken', generatedToken, { httpOnly: true }); // Aquí configuras las opciones de la cookie según tu necesidad
-            console.log(user)
             req.session.user = {
                 name: user.name,
                 email: user.email,

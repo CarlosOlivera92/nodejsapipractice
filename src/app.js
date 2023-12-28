@@ -1,21 +1,22 @@
 import express from "express";
-import productsRouter from './routes/products.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 import handlebars from 'express-handlebars';
 import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-import messagesRouter from './routes/messages.router.js';
 import AuthRouter from './routes/auth.router.js';
 import ViewsRouter from "./routes/views.router.js";
 import CartsRouter from "./routes/carts.router.js";
+import ProductsRouter from "./routes/products.router.js";
+import MessagesRouter from "./routes/messages.router.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import { initializePassport } from "./config/passport.config.js";
 import passport from "passport";
 import cookieParser from 'cookie-parser';
-
+import MessagesRepository from "./repositories/messages.repository.js";
+import { Messages } from "./dao/factory.js";
 
 const port = 8080;
 const app = express();
@@ -24,7 +25,11 @@ const app = express();
 const authRouter = new AuthRouter();
 const viewsRouter = new ViewsRouter();
 const cartsRouter = new CartsRouter();
-console.log(__dirname)
+const productsRouter = new ProductsRouter();
+const messagesRouter = new MessagesRouter();
+
+const messagesDao = new Messages();
+const messagesRepository = new MessagesRepository(messagesDao);
 //Servidor archivos estaticos
 app.use(express.static(`${__dirname}/public`))
 
@@ -57,10 +62,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Routes
-app.use('/api/chat', messagesRouter);
+app.use('/api/chat', messagesRouter.getRouter());
 app.use('/api/auth', authRouter.getRouter());
 
-app.use('/api/products', productsRouter);
+app.use('/api/products', productsRouter.getRouter());
 app.use('/api/carts', cartsRouter.getRouter());
 app.use('/api/sessions', sessionsRouter);
 app.use('/', viewsRouter.getRouter());
@@ -95,8 +100,8 @@ socketServer.on('connection', socket => {
     })
     socket.on('message', async(newMessage) => {
         console.log(newMessage)
-        await messagesManager.save(newMessage);
-        const messages = await messagesManager.getAll();
+        await messagesRepository.save(newMessage);
+        const messages = await messagesRepository.get();
         socketServer.emit('messages', messages);
     })
 })
