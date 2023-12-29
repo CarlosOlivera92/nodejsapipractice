@@ -14,7 +14,7 @@ export default class ViewsRouter extends Router {
         this.get('/login', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.viewsController.login(req, res, next));
         this.get('/register', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.viewsController.register(req, res, next));
         this.get('/', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.productsController.getByQueries(req, res, next));
-        this.get('/carts/:cid', [accessRolesEnum.ADMIN, accessRolesEnum.USER], passportStrategiesEnum.NOTHING, this.cart);
+        this.get('/carts/:cid', [accessRolesEnum.ADMIN, accessRolesEnum.USER], passportStrategiesEnum.NOTHING, (req, res, next) => this.viewsController.cart(req, res, next));
         this.get(
             '/chat',
             [accessRolesEnum.USER],
@@ -27,23 +27,9 @@ export default class ViewsRouter extends Router {
         this.get("/products/:productId", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.getProductDetails);
 
     }
-    async getAllProducts(req, res) {
-        const products = await this.productsManager.getAll();
-        res.render('home', { layout:'main', products: products, user: req.session.user });
-    }
-    async cart(req, res) {
-        const cartId = new ObjectId(req.params.cid);
-        const cart = await this.cartsManager.getOne(cartId);
-        let products = []
-        for (let i of cart.products) {
-            products.push(i)
-        }
-        res.render('cart', {cart: products, user:req.session.user});
-    }
+
 
     async getProductDetails(req, res) {
-        const productId = new ObjectId( req.params.productId );
-        const productDetails = await this.productsManager.getOne(productId);
-        res.render("productdetails", { product: productDetails, user: req.session.user });
+
     }
 }

@@ -17,7 +17,11 @@ import passport from "passport";
 import cookieParser from 'cookie-parser';
 import MessagesRepository from "./repositories/messages.repository.js";
 import { Messages } from "./dao/factory.js";
+import { Products } from "./dao/factory.js";
+import ProductsRepository from "./repositories/products.repository.js";
 
+const productsDao = new Products();
+const productsRepository = new ProductsRepository(productsDao);
 const port = 8080;
 const app = express();
 
@@ -81,8 +85,8 @@ socketServer.on('connection', socket => {
     console.log('Nuevo cliente conectado')
     socket.on('addProduct', async(productData) => {
         try {
-            await manager.save(productData);
-            const addedProducts = await manager.getAll();
+            productsRepository.save(productData);
+            const addedProducts = await productsRepository.getAll();
             socketServer.emit('newProducts', { products: addedProducts }); // Envia la actualización al cliente que la solicitó
         } catch (error) {
                 console.error('Error al agregar el producto:', error);
@@ -91,8 +95,9 @@ socketServer.on('connection', socket => {
     socket.on('delProduct', async(productId) => {
         try {
             const id = new ObjectId(productId);
-            await manager.deleteOne(id);
-            const updatedProducts = await manager.getAll();
+            productsRepository.deleteOne(id);
+            const updatedProducts = await productsRepository.getAll();
+            console.log(updatedProducts)
             socketServer.emit('newProducts', { products: updatedProducts }); // Envia la actualización al cliente que la solicitó
         } catch (error) {
             console.error('Error al eliminar el producto:', error);

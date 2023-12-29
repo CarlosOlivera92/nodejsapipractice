@@ -80,7 +80,7 @@ form.addEventListener('submit', async (event) => {
 socket.on('newProducts', (products) => {
     const productList = document.getElementById("productList");
     productList.innerHTML = ''; // Borra el contenido actual
-
+    console.log(products)
     for (let product of products.products) {
         const productItem = `
             <div class="product">

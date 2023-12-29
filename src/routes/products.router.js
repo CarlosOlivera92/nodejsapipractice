@@ -12,6 +12,8 @@ export default class ProductsRouter extends Router {
   } 
   init() {
     this.get('/', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.productsController.getByQueries(req, res, next));
+    this.post('/', [accessRolesEnum.ADMIN], passportStrategiesEnum.JWT, this.authorize("ADMIN"), (req, res, next) => this.productsController.create(req, res, next));
+    this.delete('/', [accessRolesEnum.ADMIN], passportStrategiesEnum.JWT, this.authorize("ADMIN"), (req, res, next) => this.productsController.deleteOne(req, res, next));
   }
 }
 /*
