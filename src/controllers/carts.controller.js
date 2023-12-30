@@ -31,56 +31,59 @@ export default class CartsController {
         try {
             const { productId, cartId } = req.body;
             const userId = req.user.id;
-            console.log(req.user)
             const id = new ObjectId(productId)
             const product = await this.productsRepository.getOne(id);
-            let newCartId;
-            if (cartId != null && cartId != "undefined") {
-                newCartId = new ObjectId(cartId);
+            if (product === "Producto no encontrado") {
+                return res.status(404).send("No se ha podido encontrar el producto especificado.");
             }
     
-            if (product !== "Producto no encontrado") {
-                if (newCartId) {
-                    const existingCart = await this.cartsRepository.getCartById(newCartId);
-                    if (existingCart) {
-
-                        existingCart.products.push({
-                            productId: product._id,
-                            quantity: 1,
-                        });
-                        const updatedUser = await this.usersRepository.update(userId, { cart: existingCart._id });
-
-                        await this.cartsRepository.updateCart(cartId, existingCart);
-                        res.status(200).send({
-                            message: 'Se ha agregado el producto al carrito existente y se ha asociado al usuario.',
-                            data: { cart: existingCart, user: updatedUser }
-                        });
-                    } else {
-                        res.status(404).send('El carrito especificado no se encontró.');
-                    }
-                } else {
-                    const productInCart = {
-                        productId: product._id,
-                        quantity: 1,
-                    };
-                    const newCart = {
-                        products: [productInCart],
-                    };
+            if (!cartId) {
+                const productInCart = {
+                    productId: product._id,
+                    quantity: 1,
+                };
+                const newCart = {
+                    products: [productInCart],
+                };
     
-                    // Guarda el carrito y obtén el ID del carrito recién creado.
-                    const createdCart = await this.cartsRepository.createCart(newCart);
-                    const createdCartId = createdCart._id;
-                    const updatedUser = await this.usersRepository.update(userId, { cart: createdCartId });
-
-                    res.status(201).send({message: `Se ha creado un nuevo carrito con ID: ${createdCartId} y se ha agregado el producto.`,data: { cart: existingCart, user: updatedUser }});
-                }
-            } else {
-                res.status(404).send("No se ha podido encontrar el producto especificado.");
+                const createdCart = await this.cartsRepository.createCart(newCart);
+                const createdCartId = createdCart._id;
+    
+                // Actualizar el usuario con el nuevo carrito
+                const updatedUser = await this.usersRepository.update(userId, { cart: createdCartId });
+    
+                return res.status(201).send({
+                    message: `Se ha creado un nuevo carrito con ID: ${createdCartId} y se ha agregado el producto.`,
+                    data: { cart: createdCart, user: updatedUser },
+                });
             }
+    
+            // El cartId no es null, procedemos con el resto del código original...
+            const existingCart = await this.cartsRepository.getCartById(new ObjectId(cartId));
+    
+            if (!existingCart) {
+                return res.status(404).send('El carrito especificado no se encontró.');
+            }
+    
+            existingCart.products.push({
+                productId: product._id,
+                quantity: 1,
+            });
+    
+            const updatedUser = await this.usersRepository.update(userId, { cart: existingCart._id });
+    
+            await this.cartsRepository.updateCart(cartId, existingCart);
+    
+            return res.status(200).send({
+                message: 'Se ha agregado el producto al carrito existente y se ha asociado al usuario.',
+                data: { cart: existingCart, user: updatedUser }
+            });
+    
         } catch (error) {
-            res.status(500).send("Ha habido un error en el servidor " + error);
+            return res.status(500).send("Ha habido un error en el servidor " + error);
         }
     }
+    
     async getCartById(req, res) {
         try {
             const cartId = new ObjectId(req.params.cid);

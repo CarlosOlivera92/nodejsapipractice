@@ -6,22 +6,25 @@ const delProductForm = document.getElementById('delProductForm');
 const productList = document.getElementById('product-list');
 
 // Inicializa el cartId desde el localStorage al cargar la página
-let cartId = localStorage.getItem('cartId') || null;
-console.log(typeof(cartId))
+let cart = localStorage.getItem('cart') || null;
+let token = localStorage.getItem('jwtToken') || null;
+
 
 const viewProductsDetails = (productId) => {
     window.location.href = `/products/${productId}`;
 }
 
 const addToCart = async (productId) => {
-    const data = {
+    let data = {
         productId: productId,
-        cartId: cartId
+        cartId: cart,
     };
-    fetch('/api/carts', {
+    console.log(JSON.stringify(data))
+    fetch('/api/carts/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(data),
     })
@@ -33,16 +36,14 @@ const addToCart = async (productId) => {
     })
     .then((data) => {
         alert('Producto añadido al carrito correctamente');
-        if(cartId == null) {
-            cartId = data.data; 
-            localStorage.setItem('cartId', cartId); 
+        if(cart == null) {
+            cart = data.data.cart; 
+            localStorage.setItem('cart', cart._id); 
         } 
-        console.log(cartId);
     })
     .catch((error) => {
         console.error('Error:', error);
         alert('Error al agregar el producto al carrito');
-        alert(cartId)
     });
 }
 
