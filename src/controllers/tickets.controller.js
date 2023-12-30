@@ -36,19 +36,13 @@ export default class TicketController {
                   continue;
                 }
             }
-            const purchasedProductsIds = productsToPurchase
-            .filter(item => {
-                !productsNotPurchased.includes(item.productId._id)
-            })
-            .map(item => {
-                item.product._id
-            });
+
             // Crear el ticket con los datos de la compra
             const ticketData = {
                 code: generateUniqueCode(), // Generar un código único para el ticket
                 purchase_datetime: new Date(),
-                amount: calculateTotalAmount(productsToPurchase, purchasedProductsIds),
-                purchaser: req.user.email, // O cualquier campo que identifique al comprador
+                amount: calculateTotalAmount(productsToPurchase),
+                purchaser: req.user.email, 
             };
 
             const newTicket = await this.ticketsRepository.createTicket(ticketData);

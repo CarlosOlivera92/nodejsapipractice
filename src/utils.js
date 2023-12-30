@@ -27,18 +27,12 @@ const generateUniqueCode = () => {
     return uniqueID + timestamp; // Combina las dos cadenas para obtener un código único
 }
 
-const calculateTotalAmount = (productsToPurchase, purchasedProductsIds) => {
-    let totalAmount = 0;
-
-    for (const item of productsToPurchase) {
-        if (purchasedProductsIds.includes(item._id)) {
-        totalAmount += item.quantity * item.product.price;
-        }
-    };
-
-    return totalAmount;
-}
-
+const calculateTotalAmount = (productsToPurchase) => {
+    console.log(productsToPurchase)
+    return productsToPurchase.reduce((totalAmount, item) => {
+        return totalAmount + (item.quantity * item.productId.price);
+    }, 0);
+};
 export {
     productsFilePath,
     cartsFilePath,

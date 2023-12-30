@@ -14,6 +14,10 @@ const productInCartSchema = new mongoose.Schema({
 // Definir el esquema para el carrito
 const cartSchema = new mongoose.Schema({
   products: [productInCartSchema], 
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users' 
+  }
 });
 
 // Crear el modelo usando el esquema
