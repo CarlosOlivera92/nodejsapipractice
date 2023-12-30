@@ -58,17 +58,24 @@ export default class CartsController {
                 });
             }
     
-            // El cartId no es null, procedemos con el resto del código original...
             const existingCart = await this.cartsRepository.getCartById(new ObjectId(cartId));
     
             if (!existingCart) {
                 return res.status(404).send('El carrito especificado no se encontró.');
             }
-    
-            existingCart.products.push({
-                productId: product._id,
-                quantity: 1,
-            });
+            // Verificar si el producto ya está en el carrito
+            const existingProductIndex = existingCart.products.findIndex(item => String(item.productId._id) === String(product._id));
+
+            if (existingProductIndex !== -1) {
+                // Si el producto ya está en el carrito, aumentar la cantidad
+                existingCart.products[existingProductIndex].quantity += 1;
+            } else {
+                // Si el producto no está en el carrito, agregarlo con cantidad 1
+                existingCart.products.push({
+                    productId: product._id,
+                    quantity: 1,
+                });
+            }
     
             const updatedUser = await this.usersRepository.update(userId, { cart: existingCart._id });
     
