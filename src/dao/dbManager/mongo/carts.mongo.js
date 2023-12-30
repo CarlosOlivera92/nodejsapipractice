@@ -22,6 +22,6 @@ export default class Carts {
     }
     //GET ONE
     getOne = async(options) => {
-        return await CartsModel.findOne(options);
+        return await CartsModel.findOne(options).populate('products.productId');
     }
 }

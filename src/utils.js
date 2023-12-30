@@ -20,10 +20,31 @@ const generateToken = (user) => {
     const token = jwt.sign({ user }, config.privateKey, { expiresIn: '24h' });
     return token;
 }
+const generateUniqueCode = () => {
+    const uniqueID = Math.random().toString(36).substr(2, 9); // Genera una cadena alfanumérica aleatoria
+    const timestamp = Date.now().toString(36).substr(2, 6); // Agrega parte de la marca de tiempo actual
+
+    return uniqueID + timestamp; // Combina las dos cadenas para obtener un código único
+}
+
+const calculateTotalAmount = (productsToPurchase, purchasedProductsIds) => {
+    let totalAmount = 0;
+
+    for (const item of productsToPurchase) {
+        if (purchasedProductsIds.includes(item._id)) {
+        totalAmount += item.quantity * item.product.price;
+        }
+    };
+
+    return totalAmount;
+}
+
 export {
     productsFilePath,
     cartsFilePath,
     __dirname,
     toPascalCase,
-    generateToken
+    generateToken,
+    generateUniqueCode,
+    calculateTotalAmount
 }

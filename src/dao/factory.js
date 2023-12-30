@@ -6,7 +6,7 @@ let Users;
 let Carts;
 let Products;
 let Messages; 
-
+let Tickets;
 switch(persistence) {
     case 'MONGO':
         console.log('Working with MongoDB');
@@ -24,10 +24,12 @@ switch(persistence) {
         
         const { default: MessagesMongo } = await import('../dao/dbManager/mongo/messages.mongo.js');
         Messages = MessagesMongo;
+        const { default: TicketsMongo } = await import('../dao/dbManager/mongo/ticket.mongo.js');
+        Tickets = TicketsMongo;
         break;
     case 'MEMORY':
         console.log('Working with file system');
         break;
 }
 
-export { Users, Carts, Products, Messages };
+export { Users, Carts, Products, Messages, Tickets };

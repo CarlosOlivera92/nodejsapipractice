@@ -1,6 +1,4 @@
-import { json } from "express";
 import querystring from 'querystring';
-import ProductsDTO from "../DTO/products.dto.js";
 export default class ProductsRepository {
     constructor(dao) {
         this.dao = dao;
@@ -81,7 +79,7 @@ export default class ProductsRepository {
 
     async getOne(productId) {
         try {
-            const product = await ProductsModel.getOne(productId);
+            const product = await this.dao.getOne(productId);
             return product ? product.toObject() : null;
         } catch (error) {
             throw new Error("Error al obtener el producto: " + error);
@@ -95,6 +93,18 @@ export default class ProductsRepository {
         } catch (error) {
             console.log(error)
             throw new Error("Error al eliminar el producto");
+        }
+    }
+    async updateProductStock(productId, newStock) {
+        try {
+            const updatedProduct = await this.dao.findOneAndUpdate(
+                { _id: productId },
+                { $set: { stock: newStock } }, 
+                { new: true }
+            );
+            return updatedProduct;
+        } catch (error) {
+            throw new Error("Error al actualizar el stock del producto");
         }
     }
 }

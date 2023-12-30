@@ -25,23 +25,24 @@ export default class CartsRepository {
 
     async getCartById(cartId) {
         try {
-            const cart = await this.dao.getOne(cartId);
+            let options = { _id: cartId}
+            const cart = await this.dao.getOne(options);
             if (cart) {
                 const cartDto = new CartsDto(cart);
                 return cartDto;
             }
             return cart;
         } catch (error) {
-            throw new Error('Error al obtener el carrito');
+            throw new Error(error);
         }
     }
 
     async updateCart(cartId, updatedCartData) {
         try {
-            const updatedCart = await this.dao.update(cartId, updatedCartData);
+            const updatedCart = await this.dao.modify(cartId, updatedCartData);
             return updatedCart;
         } catch (error) {
-            throw new Error('Error al actualizar el carrito');
+            throw new Error(error);
         }
     }
 

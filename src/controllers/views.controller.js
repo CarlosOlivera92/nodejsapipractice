@@ -5,7 +5,7 @@ import MessagesRepository from "../repositories/messages.repository.js";
 import { Carts } from "../dao/factory.js";
 import CartsRepository from "../repositories/carts.repository.js";
 
-const cartsDao = new Carts;
+const cartsDao = new Carts();
 const productsDao = new Products();
 const messagesDao = new Messages()
 export default class ViewsController {
