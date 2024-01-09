@@ -66,7 +66,6 @@ const initializePassport = () => {
             if (!user || !match) {
                 return done(null, false);
             }
-
             return done(null, user);
         } catch (error) {
             return done(error);

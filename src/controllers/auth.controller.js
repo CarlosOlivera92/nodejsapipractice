@@ -2,6 +2,8 @@ import passport from 'passport';
 import { generateToken } from '../utils.js';
 import UsersRepository from '../repositories/users.repository.js';
 import { Users } from '../dao/factory.js';
+import CustomError from '../middlewares/errors/CustomError.js';
+import EErrors from '../middlewares/errors/enums.js';
 const usersDao = new Users();
 class AuthController {
     constructor() {
@@ -22,15 +24,24 @@ class AuthController {
     }
     async login(req, res) {
         passport.authenticate('login', (err, user, info) => {
-            if (err) {
-                console.log("error" + " " + err.message);
-                return res.status(500).send({ status: 'error', message: 'Error en el login' });
-            }
             if (!user) {
-                console.log("error, user not in database" + " " + err.message);
-
-                return res.status(401).send({ status: 'error', message: 'Credenciales inválidas' });
+                throw CustomError.createError({
+                    name: 'UserError',
+                    cause: 'User not in database',
+                    message: 'Error trying to log in, invalid credentials',
+                    code: EErrors.USER_NOT_FOUND
+                })
             }
+            if (err) {
+                throw CustomError.createError({
+                    name: 'Fatal error',
+                    cause: err,
+                    message: err.message,
+                    code: EErrors.INTERNAL_SERVER_ERROR
+                })
+            }
+
+            
             const generatedToken = generateToken(user);
             res.cookie('jwtToken', generatedToken, { httpOnly: true }); // Aquí configuras las opciones de la cookie según tu necesidad
             req.session.user = {

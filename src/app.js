@@ -4,7 +4,8 @@ import handlebars from 'express-handlebars';
 import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
 import mongoose from "mongoose";
-import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+import { ObjectId } from "mongodb";
+import errorHandler from './middlewares/errors/index.js';
 import AuthRouter from './routes/auth.router.js';
 import ViewsRouter from "./routes/views.router.js";
 import CartsRouter from "./routes/carts.router.js";
@@ -19,7 +20,7 @@ import MessagesRepository from "./repositories/messages.repository.js";
 import { Messages } from "./dao/factory.js";
 import { Products } from "./dao/factory.js";
 import ProductsRepository from "./repositories/products.repository.js";
-
+import { MocksRouter } from "./routes/mocks.js";
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
 const port = 8080;
@@ -31,7 +32,7 @@ const viewsRouter = new ViewsRouter();
 const cartsRouter = new CartsRouter();
 const productsRouter = new ProductsRouter();
 const messagesRouter = new MessagesRouter();
-
+const mocksRouter = new MocksRouter();
 const messagesDao = new Messages();
 const messagesRepository = new MessagesRepository(messagesDao);
 //Servidor archivos estaticos
@@ -72,7 +73,9 @@ app.use('/api/auth', authRouter.getRouter());
 app.use('/api/products', productsRouter.getRouter());
 app.use('/api/carts', cartsRouter.getRouter());
 app.use('/api/sessions', sessionsRouter);
+app.use('/api/mocks', mocksRouter.getRouter());
 app.use('/', viewsRouter.getRouter());
+app.use(errorHandler);
 
 //Levantar servidor
 const server = app.listen(8080, () => {

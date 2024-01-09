@@ -1,6 +1,8 @@
 import ProductsRepository from "../repositories/products.repository.js";
-import { Products } from "../dao/factory.js";
 import { toPascalCase } from "../utils.js";
+import { Products } from "../dao/factory.js";
+import MockedProducts from "../mocks/products.mocks.js";
+
 const productsDao = new Products();
 export default class ProductsController {
     constructor() {
@@ -11,18 +13,7 @@ export default class ProductsController {
         this.getAll = this.getAll.bind(this);
         this.deleteOne = this.deleteOne.bind(this);
     }
-    /*
-    async getByQueries(req, res, next) {
-        try {
-            const { query, options } = req.params;
-            console.log(req.query) 
-            console.log("hola")
-            const result = await this.productsRepository.getByQueries(query, options, req);
-            res.status(200).json(result);
-        } catch (error) {
-            next(error);
-        }
-    }*/
+
     async getByQueries(req, res, next) {
         try {
 
@@ -72,5 +63,9 @@ export default class ProductsController {
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
+    }
+    async mockingProducts(req, res) {
+        const mockedProducts = MockedProducts.generateMockProducts();
+        res.status(200).json(mockedProducts);
     }
 }
