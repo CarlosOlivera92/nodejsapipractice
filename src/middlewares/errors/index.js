@@ -10,7 +10,20 @@ export default (error, req, res, next) => {
                 description: error.cause || 'Routing error'
             });
             break;
-
+        case EErrors.CREATE_PRODUCT_ERROR: 
+            res.status(400).send({
+                status: 'error',
+                error: error.name,
+                description: error.cause || 'Cannot create product'
+            })
+            break;
+        case EErrors.CREATE_PRODUCT_ERROR: 
+            res.status(400).send({
+                status: 'error',
+                error: error.name,
+                description: error.cause || 'Cannot update product'
+            })
+            break;
         case EErrors.INVALID_TYPE_ERROR:
             res.status(400).send({
                 status: 'error',
@@ -59,6 +72,5 @@ export default (error, req, res, next) => {
             });
             break;
     }
-
     next();
 }
