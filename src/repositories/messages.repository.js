@@ -16,7 +16,6 @@ export default class MessagesRepository {
 
     async save(newMessage) {
         try {
-            console.log(newMessage)
             const message = new MessagesModel({
                 user: newMessage.user,
                 message: newMessage.message,

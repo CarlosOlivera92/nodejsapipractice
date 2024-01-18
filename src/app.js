@@ -21,12 +21,14 @@ import { Messages } from "./dao/factory.js";
 import { Products } from "./dao/factory.js";
 import ProductsRepository from "./repositories/products.repository.js";
 import { MocksRouter } from "./routes/mocks.js";
+import { addLogger } from "./logger.js";
+import LoggerRouter from "./routes/loggers.router.js";
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
 const port = 8080;
 const app = express();
 
-
+const loggerRouter = new LoggerRouter();
 const authRouter = new AuthRouter();
 const viewsRouter = new ViewsRouter();
 const cartsRouter = new CartsRouter();
@@ -66,6 +68,10 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Logger
+
+app.use(addLogger);
+
 //Routes
 app.use('/api/chat', messagesRouter.getRouter());
 app.use('/api/auth', authRouter.getRouter());
@@ -74,6 +80,7 @@ app.use('/api/products', productsRouter.getRouter());
 app.use('/api/carts', cartsRouter.getRouter());
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/mocks', mocksRouter.getRouter());
+app.use('/api/logger', loggerRouter.getRouter());
 app.use('/', viewsRouter.getRouter());
 app.use(errorHandler);
 

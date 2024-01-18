@@ -25,6 +25,7 @@ class AuthController {
     async login(req, res) {
         passport.authenticate('login', (err, user, info) => {
             if (!user) {
+                req.logger.error("error occoured during log in")
                 throw CustomError.createError({
                     name: 'UserError',
                     cause: 'User not in database',
@@ -33,6 +34,7 @@ class AuthController {
                 })
             }
             if (err) {
+                req.logger.fatal("fatal error during login")
                 throw CustomError.createError({
                     name: 'Fatal error',
                     cause: err,
@@ -40,7 +42,6 @@ class AuthController {
                     code: EErrors.INTERNAL_SERVER_ERROR
                 })
             }
-
             
             const generatedToken = generateToken(user);
             res.cookie('jwtToken', generatedToken, { httpOnly: true }); // Aquí configuras las opciones de la cookie según tu necesidad
@@ -51,6 +52,7 @@ class AuthController {
                 role: user.role,
                 jwtToken: generatedToken
             };
+            req.logger.info("test info logger");
             return res.status(200).send({ status: 'success', token: generatedToken });
         })(req, res);
     }

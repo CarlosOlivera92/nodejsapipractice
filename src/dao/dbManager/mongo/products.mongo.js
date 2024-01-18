@@ -33,8 +33,6 @@ export default class Products {
     }
     getPaginated = async(query, options) => {
         try {
-            console.log(query);
-            console.log(options);
             const result = await ProductsModel.paginate(query, options);
             return result;
         } catch (error) {
