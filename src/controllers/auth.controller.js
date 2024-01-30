@@ -8,6 +8,8 @@ import { readFileSync } from 'fs';
 import { __dirname } from '../utils.js';
 import { transporter } from '../utils.js';
 const emailContent = readFileSync(`${__dirname}/public/static/mail.html`);
+const cssContent = readFileSync(`${__dirname}/public/css/email.css`);
+
 const usersDao = new Users();
 class AuthController {
     constructor() {
@@ -83,13 +85,22 @@ class AuthController {
         })
     }
     async forgotPassword (req, res) {
-        await transporter.sendMail({
-            from: 'Coderhouse 55575',
-            to: 'thestuntman92@gmail.com',
-            subject: 'Recuperacion de contrasenia',
-            html: emailContent
-        })
-        res.send("Correo Enviado")
+        try {
+            const user = await this.usersRepository.getOne(req.body.email);
+            if (!user) {
+                return res.status(404).send({ status: 'error', message: 'User not found' });
+            }
+            transporter.sendMail({
+                from: 'Coderhouse 55575',
+                to: req.body.email,
+                subject: 'Recuperacion de contrasenia',
+                html: `${emailContent}?token=aaaaa-aaaaaa`
+            });
+            res.send("Correo Enviado");
+        }
+        catch (error) {
+            throw new Error( error );
+        }
     }
 }
 
