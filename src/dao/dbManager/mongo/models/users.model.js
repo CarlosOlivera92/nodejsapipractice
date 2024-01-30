@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const rolesEnum = ['ADMIN', 'USER'];
+const rolesEnum = ['ADMIN', 'USER', 'PREMIUM'];
 
 const usersCollection = 'users';
 

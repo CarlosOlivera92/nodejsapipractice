@@ -38,6 +38,19 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  owner: {
+    type: String, 
+    ref: 'USERS',
+    default: 'ADMIN', // Valor predeterminado
+    validate: {
+      validator: async function(value) {
+        // Validar que el usuario sea premium
+        const user = await mongoose.model('User').findOne({ email: value });
+        return user && user.role === 'premium';
+      },
+      message: 'El propietario debe ser un usuario premium.'
+    }
+  }
 });
 productSchema.plugin(mongoosePaginate);
 // Crear el modelo usando el esquema
