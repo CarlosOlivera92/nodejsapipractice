@@ -123,7 +123,7 @@ export default class Router {
                 //apply, va a ejecutar la función callback, a la instancia de nuestra clase que es el router
                 await callback.apply(this, params);
             } catch (error) {
-                params[1].status(666).json({ status: '666', message: error.message })
+                params[1].status(500).json({ status: '500', message: error.message })
             }
         }) //[req, res]
     }

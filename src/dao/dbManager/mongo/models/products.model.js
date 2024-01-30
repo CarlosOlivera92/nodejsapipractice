@@ -40,13 +40,13 @@ const productSchema = new mongoose.Schema({
   },
   owner: {
     type: String, 
-    ref: 'USERS',
+    ref: 'users',
     default: 'ADMIN', // Valor predeterminado
     validate: {
       validator: async function(value) {
         // Validar que el usuario sea premium
-        const user = await mongoose.model('User').findOne({ email: value });
-        return user && user.role === 'premium';
+        const user = await mongoose.model('users').findOne({ email: value });
+        return user && user.role === 'PREMIUM';
       },
       message: 'El propietario debe ser un usuario premium.'
     }

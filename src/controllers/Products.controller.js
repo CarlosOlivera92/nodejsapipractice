@@ -46,11 +46,13 @@ export default class ProductsController {
                     message: 'Cannot create the product',
                     code: EErrors.CREATE_PRODUCT_ERROR
                 })
-            }
+            };
+            productData.owner = req.user.email;
+            console.log(productData)
             const result = await this.productsRepository.save(productData);
             res.status(201).json(result);
         } catch (error) {
-            next(error);
+            throw new Error(error);
         }
     }
 

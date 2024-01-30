@@ -60,7 +60,7 @@ export default class ProductsRepository {
             const result = await this.dao.create(product);
             return result;
         } catch (error) {
-            throw new Error("Error al guardar el producto");
+            throw new Error(error);
         }
     }
 
