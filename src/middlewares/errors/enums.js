@@ -8,6 +8,8 @@ const EErrors = {
     CREATE_PRODUCT_ERROR: 7,
     ADD_TO_CART_ERROR: 8,    
     UPDATING_PRODUCT_ERROR: 9,
+    TOKEN_EXPIRED: 10,
+    INVALID_PASSWORD:11,
 }
 
 export default EErrors;

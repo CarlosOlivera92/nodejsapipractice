@@ -7,7 +7,7 @@ import EErrors from '../middlewares/errors/enums.js';
 import { readFileSync } from 'fs';
 import { __dirname } from '../utils.js';
 import { transporter } from '../utils.js';
-
+import { hashPassword, comparePasswords } from '../bcryptUtils.js';
 const usersDao = new Users();
 class AuthController {
     constructor() {
@@ -17,6 +17,7 @@ class AuthController {
         this.logout = this.logout.bind(this);
         this.getAllUsers = this.getAllUsers.bind(this);
         this.forgotPassword = this.forgotPassword.bind(this);
+        this.resetPassword = this.resetPassword.bind(this);
     }
     async getAllUsers(req, res) {
         try {
@@ -128,9 +129,44 @@ class AuthController {
     }
     async resetPassword(req, res) {
         try {
+            const {newPassword, token} = req.body;
+            const options = {
+                resetPasswordToken: token,
+            }
+            const user = await this.usersRepository.getOne(options);
+
+            if (!user) {
+                req.logger.fatal("Error: User not in database")
+                throw CustomError.createError({
+                    name: 'User Not in Database',
+                    cause: err,
+                    message: err.message,
+                    code: EErrors.USER_NOT_FOUND
+                })
+            }
+            if (new Date() > new Date(user.resetPasswordExpires)) {
+                // Token ha expirado, manejar según sea necesario
+                req.logger.fatal("Error: Reset token has expired");
+                throw CustomError.createError({
+                    name: 'Token Expired',
+                    message: 'Reset token has expired',
+                    code: EErrors.TOKEN_EXPIRED
+                });
+            }
+            if (await comparePasswords(newPassword, user.password)) {
+                req.logger.fatal("Error: Cannot use a password that has been used before");
+                throw CustomError.createError({
+                    name: 'Invalid Password',
+                    message: 'Cannot use a password that has been used before',
+                    code: EErrors.INVALID_PASSWORD
+                });
+            }
+            user.password = await hashPassword(newPassword);
+            await this.usersRepository.update(user.id, user);
+            res.status(200).send({ status: 'success', message: 'Contraseña cambiada satisfactoriamente!' });
 
         } catch (error) {
-
+            throw new Error( error );
         }
     }
 }
