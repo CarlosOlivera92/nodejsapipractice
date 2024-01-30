@@ -7,8 +7,6 @@ import EErrors from '../middlewares/errors/enums.js';
 import { readFileSync } from 'fs';
 import { __dirname } from '../utils.js';
 import { transporter } from '../utils.js';
-const emailContent = readFileSync(`${__dirname}/public/static/mail.html`);
-const cssContent = readFileSync(`${__dirname}/public/css/email.css`);
 
 const usersDao = new Users();
 class AuthController {
@@ -86,20 +84,53 @@ class AuthController {
     }
     async forgotPassword (req, res) {
         try {
-            const user = await this.usersRepository.getOne(req.body.email);
+            const options = {
+                email: req.body.email
+            }
+            const user = await this.usersRepository.getOne(options);
+
             if (!user) {
                 return res.status(404).send({ status: 'error', message: 'User not found' });
             }
+
+            const resetToken = generateToken(user);
+            user.resetPasswordToken = resetToken;
+            user.resetPasswordExpires = Date.now() + 3600000; // 1 hora de expiración
+            await this.usersRepository.update(user.id, user);
+
             transporter.sendMail({
-                from: 'Coderhouse 55575',
+                from: 'GoodGame Workshop',
                 to: req.body.email,
                 subject: 'Recuperacion de contrasenia',
-                html: `${emailContent}?token=aaaaa-aaaaaa`
+                html: `
+                    <!DOCTYPE html>
+                    <html lang="es">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Recuperacion de contraseña</title>
+                        </head>
+                        <body>
+                            <p>¡Hola ${user.name}</p>
+                            <p>Recibiste este correo porque solicitaste restablecer tu contraseña en nuestro sitio web.</p>
+                            <p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p>
+                            <a href="http://localhost:8080/reset-password?token=${resetToken}">Restablecer Contraseña</a>
+                            <p>Si no solicitaste este restablecimiento, puedes ignorar este correo y tu contraseña permanecerá sin cambios.</p>
+                        </body>
+                    </html>
+                `
             });
-            res.send("Correo Enviado");
+            res.status(200).send({ status: 'success', message: 'Correo de recuperación enviado' });
         }
         catch (error) {
             throw new Error( error );
+        }
+    }
+    async resetPassword(req, res) {
+        try {
+
+        } catch (error) {
+
         }
     }
 }

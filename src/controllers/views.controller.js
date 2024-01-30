@@ -50,7 +50,11 @@ export default class ViewsController {
         res.render('realtimeproducts', {products: products.payload, user:req.session.user});
     }
 
-
+    async resetPassword (req, res) {
+        const token = req.query.token;
+        console.log(token)
+        res.render('reset-password');
+    }
     async getProductDetails(req, res) {
         // Lógica para obtener y renderizar los detalles del producto
         const productId = new ObjectId( req.params.productId );

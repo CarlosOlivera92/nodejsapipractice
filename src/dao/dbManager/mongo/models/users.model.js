@@ -4,7 +4,6 @@ const rolesEnum = ['ADMIN', 'USER'];
 
 const usersCollection = 'users';
 
-
 const usersSchema = new mongoose.Schema({
     first_name: String,
     last_name: String,
@@ -22,7 +21,9 @@ const usersSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'carts'
     },
-    password: String
+    password: String,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 });
 
 const UsersModel = mongoose.model(usersCollection, usersSchema);

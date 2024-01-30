@@ -23,7 +23,6 @@ import ProductsRepository from "./repositories/products.repository.js";
 import { MocksRouter } from "./routes/mocks.js";
 import { addLogger } from "./logger.js";
 import LoggerRouter from "./routes/loggers.router.js";
-import { transporter } from "./utils.js";
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
 const port = 8080;

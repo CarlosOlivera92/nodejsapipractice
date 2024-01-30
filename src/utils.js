@@ -42,6 +42,7 @@ const transporter = nodemailer.createTransport({
       pass: 'sbvl idzw kccs kprv'
     }
 });
+
 export {
     productsFilePath,
     cartsFilePath,
