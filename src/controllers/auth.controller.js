@@ -8,7 +8,6 @@ const usersDao = new Users();
 class AuthController {
     constructor() {
         this.usersRepository = new UsersRepository(usersDao);
-        // Aquí vinculamos las funciones al contexto del controlador
         this.login = this.login.bind(this);
         this.register = this.register.bind(this);
         this.logout = this.logout.bind(this);

@@ -2,6 +2,8 @@ import path from "path";
 import { fileURLToPath } from "url"; // Importa fileURLToPath desde el módulo url
 import jwt from 'jsonwebtoken';
 import config from "./config/config.js";
+import nodemailer from 'nodemailer';
+
 // Convierte la URL actual en una ruta de archivo
 const __filename = fileURLToPath(import.meta.url);
 // Obtiene el directorio base
@@ -33,6 +35,13 @@ const calculateTotalAmount = (productsToPurchase) => {
         return totalAmount + (item.quantity * item.productId.price);
     }, 0);
 };
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'carlosoliveraggw@gmail.com',
+      pass: 'sbvl idzw kccs kprv'
+    }
+});
 export {
     productsFilePath,
     cartsFilePath,
@@ -40,5 +49,6 @@ export {
     toPascalCase,
     generateToken,
     generateUniqueCode,
-    calculateTotalAmount
+    calculateTotalAmount,
+    transporter,
 }
