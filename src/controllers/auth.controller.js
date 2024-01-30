@@ -4,6 +4,10 @@ import UsersRepository from '../repositories/users.repository.js';
 import { Users } from '../dao/factory.js';
 import CustomError from '../middlewares/errors/CustomError.js';
 import EErrors from '../middlewares/errors/enums.js';
+import { readFileSync } from 'fs';
+import { __dirname } from '../utils.js';
+import { transporter } from '../utils.js';
+const emailContent = readFileSync(`${__dirname}/public/static/mail.html`);
 const usersDao = new Users();
 class AuthController {
     constructor() {
@@ -12,6 +16,7 @@ class AuthController {
         this.register = this.register.bind(this);
         this.logout = this.logout.bind(this);
         this.getAllUsers = this.getAllUsers.bind(this);
+        this.forgotPassword = this.forgotPassword.bind(this);
     }
     async getAllUsers(req, res) {
         try {
@@ -76,6 +81,15 @@ class AuthController {
             res.clearCookie('jwtToken');
             res.redirect('/login');
         })
+    }
+    async forgotPassword (req, res) {
+        await transporter.sendMail({
+            from: 'Coderhouse 55575',
+            to: 'thestuntman92@gmail.com',
+            subject: 'Recuperacion de contrasenia',
+            html: emailContent
+        })
+        res.send("Correo Enviado")
     }
 }
 
