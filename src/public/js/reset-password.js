@@ -1,13 +1,21 @@
 const form = document.getElementById('resetPasswordForm');
+const tokenInput = document.getElementById('tokenInput'); // Nuevo
+
+// Captura el token de la URL
+const urlSearchParams = new URLSearchParams(window.location.search);
+const params = Object.fromEntries(urlSearchParams.entries());
+const token = params.token;
+
+// Establece el valor del token en el campo oculto
+tokenInput.value = token;
 
 const resetPassword = (data) => {
-
     fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(Object.fromEntries(data)), // Convierte FormData a objeto
     })
     .then(async (response) => {
         if (response.status === 201 || response.status === 200) {
@@ -29,4 +37,4 @@ form.addEventListener('submit', e => {
     const data = new FormData(form);
 
     resetPassword(data);
-})
+});
