@@ -36,7 +36,10 @@ export default class CartsController {
             if (product === "Producto no encontrado") {
                 return res.status(404).send("No se ha podido encontrar el producto especificado.");
             }
-    
+            // Verificar si el producto ya pertenece al usuario premium
+            if (product.owner && product.owner === userId) {
+                return res.status(403).send("No puedes agregar tu propio producto a tu carrito.");
+            }
             if (!cartId) {
                 const productInCart = {
                     productId: product._id,
