@@ -117,7 +117,7 @@ const initializePassport = () => {
 
             const user = await usersRepository.getOne(jwt_payload.user.id); 
 
-            if (!user || (user.role !== 'USER' && user.role !== 'ADMIN')) {
+            if (!user || (user.role !== 'USER' && user.role !== 'ADMIN' && user.role !== "PREMIUM")) {
                 return done(null, false);
             }
 

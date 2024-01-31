@@ -97,7 +97,7 @@ export default class Router {
         const user = req.user;
         console.log(user.role )
         // Verificar si req.user existe y tiene la propiedad 'role'
-        if (!user || !user.role || !(user.role === 'USER' || user.role === 'ADMIN')) {
+        if (!user || !user.role || !(user.role === 'USER' || user.role === 'ADMIN' || user.role == "PREMIUM")) {
             return res.status(403).json({ error: 'not permissions' });
         }
     
@@ -105,8 +105,7 @@ export default class Router {
     }
     authorize = (roles) => (req, res, next) => {
         const user = req.user;
-    
-        if (!user || !user.role || !roles.includes(user.role)) {
+        if (!user || !(user.role || roles.includes(user.role))) {
             return res.status(403).json({ error: 'Forbidden' });
         }
     
