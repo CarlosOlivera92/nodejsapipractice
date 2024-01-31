@@ -4,10 +4,11 @@ import UsersRepository from '../repositories/users.repository.js';
 import { Users } from '../dao/factory.js';
 import CustomError from '../middlewares/errors/CustomError.js';
 import EErrors from '../middlewares/errors/enums.js';
-import { readFileSync } from 'fs';
 import { __dirname } from '../utils.js';
 import { transporter } from '../utils.js';
 import { hashPassword, comparePasswords } from '../bcryptUtils.js';
+import { accessRolesEnum } from '../config/enums.js';
+import { ObjectId } from 'mongodb';
 const usersDao = new Users();
 class AuthController {
     constructor() {
@@ -18,6 +19,7 @@ class AuthController {
         this.getAllUsers = this.getAllUsers.bind(this);
         this.forgotPassword = this.forgotPassword.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
+        this.getPremium = this.getPremium.bind(this);
     }
     async getAllUsers(req, res) {
         try {
@@ -165,6 +167,39 @@ class AuthController {
             await this.usersRepository.update(user.id, user);
             res.status(200).send({ status: 'success', message: 'Contraseña cambiada satisfactoriamente!' });
 
+        } catch (error) {
+            throw new Error( error );
+        }
+    }
+    async getPremium(req, res) {
+        try {
+
+            const { uid } = req.params;
+            const id = new ObjectId(uid);
+            const options = {
+                _id: id
+            }
+            const user = await this.usersRepository.getOne(options);
+            if (!user) {
+                req.logger.fatal("Error: User not in database");
+                throw CustomError.createError({
+                    name: 'User not found',
+                    message: 'Cannot found the user in the database, make sure that the email corresponds to a registered user',
+                    code: EErrors.USER_NOT_FOUND
+                });
+            };
+
+            const isPremium = user.role === accessRolesEnum.PREMIUM ? true : false;
+            console.log(isPremium)
+            if (isPremium) {
+                user.role = accessRolesEnum.USER;
+            } else {
+                user.role = accessRolesEnum.PREMIUM;
+            }
+            console.log(user)
+
+            await this.usersRepository.update(user.id, user);
+            res.status(200).send({ status: 'success', message: 'Rol actualizado correctamente!' });
         } catch (error) {
             throw new Error( error );
         }

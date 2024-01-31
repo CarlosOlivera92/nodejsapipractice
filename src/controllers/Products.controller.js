@@ -48,7 +48,6 @@ export default class ProductsController {
                 })
             };
             productData.owner = req.user.email;
-            console.log(productData)
             const result = await this.productsRepository.save(productData);
             res.status(201).json(result);
         } catch (error) {
