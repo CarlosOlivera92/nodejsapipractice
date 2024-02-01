@@ -59,7 +59,9 @@ export default class Router {
         res.sendSuccessNewResourse = (data) => {
             res.status(201).json({ data });
         };
-
+        res.sendSuccessDeletion = (data) => {
+            res.status(204).json( {data} )
+        }
         res.sendServerError = (error) => {
             res.status(500).json( { error } )
         };
@@ -92,20 +94,25 @@ export default class Router {
     handlePolicies = (policies) => (req, res, next) => {
         // ['PUBLIC']
         if (policies[0] === accessRolesEnum.PUBLIC) return next();
-        console.log("-------------------------------")
-
+        console.log("-------------------------------");
+    
         const user = req.user;
-        console.log(user.role )
+        console.log(user.role);
+        
         // Verificar si req.user existe y tiene la propiedad 'role'
-        if (!user || !user.role || !(user.role === 'USER' || user.role === 'ADMIN' || user.role == "PREMIUM")) {
+        if (!user || !user.role || !(user.role === 'USER' || user.role === 'ADMIN' || user.role === 'PREMIUM')) {
             return res.status(403).json({ error: 'not permissions' });
         }
     
         next();
-    }
+    };
+    
     authorize = (roles) => (req, res, next) => {
         const user = req.user;
-        if (!user || !(user.role || !roles.includes(user.role))) {
+        console.log("User Role:", user.role);
+        console.log("Allowed Roles:", roles);
+        if (!user || !user.role || !roles.includes(user.role)) {
+            console.log("Access Denied");
             return res.status(403).json({ error: 'Forbidden' });
         }
     

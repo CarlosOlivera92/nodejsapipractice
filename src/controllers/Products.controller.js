@@ -4,7 +4,8 @@ import { Products } from "../dao/factory.js";
 import MockedProducts from "../mocks/products.mocks.js";
 import CustomError from "../middlewares/errors/CustomError.js";
 import EErrors from "../middlewares/errors/enums.js";
-
+import { accessRolesEnum } from "../config/enums.js";
+import { ObjectId } from "mongodb";
 const productsDao = new Products();
 export default class ProductsController {
     constructor() {
@@ -57,8 +58,10 @@ export default class ProductsController {
 
     async updateOne(req, res, next) {
         try {
-            const productId = req.params.id;
+            const {pid} = req.params;
+            const productId = new ObjectId(pid);
             const product = await this.productsRepository.getOne(productId);
+            console.log(productId)
             const updatedProductData = req.body; 
             if(!product) {
                 throw CustomError.createError({
@@ -76,6 +79,15 @@ export default class ProductsController {
                     code: EErrors.UPDATING_PRODUCT_ERROR
                 })
             }
+            // Verificar si el usuario es premium y el producto le pertenece
+            if (req.user.role === accessRolesEnum.PREMIUM && product.owner !== req.user.email) {
+                throw CustomError.createError({
+                    name: 'error',
+                    cause: 'Permission denied',
+                    message: 'Premium users can only update their own products',
+                    code: EErrors.PERMISSION_DENIED
+                });
+            }
             const updatedProduct = await this.productsRepository.updateOne(productId, updatedProductData);
             res.status(200).json(updatedProduct);
         } catch (error) {
@@ -84,9 +96,11 @@ export default class ProductsController {
     }
     async deleteOne(req, res) {
         try {
-            const productId = req.params.id; 
-            const result = await this.productsRepository.deleteOne(productId);
-            if (!result) {
+            const {pid} = req.params;
+            const productId = new ObjectId(pid);
+            const product = await this.productsRepository.getOne(productId);
+            console.log(productId)
+            if (!product) {
                 throw CustomError.createError({
                     name: 'error',
                     cause: 'Product doesnt exist',
@@ -94,7 +108,17 @@ export default class ProductsController {
                     code: EErrors.CREATE_PRODUCT_ERROR
                 })
             }
-            res.json(result);
+             // Verificar si el usuario es premium y el producto le pertenece
+            if (req.user.role === accessRolesEnum.PREMIUM && product.owner !== req.user.email) {
+                throw CustomError.createError({
+                    name: 'error',
+                    cause: 'Permission denied',
+                    message: 'Premium users can only delete their own products',
+                    code: EErrors.PERMISSION_DENIED
+                });
+            }
+            await this.productsRepository.deleteOne(productId);
+            res.status(204).send({ status: 'success', message: "Product deleted successfully!" })
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
