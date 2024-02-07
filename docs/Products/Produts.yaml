@@ -1,0 +1,59 @@
+paths:
+  /api/products:
+    get:
+      summary: Get all products
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: A list of products
+    post:
+      summary: Create a new product
+      security:
+        - JWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                thumbnail:
+                  type: string
+                category:
+                  type: string
+                code:
+                  type: string
+                status:
+                  type: string
+              required:
+                - title
+                - description
+                - price
+                - thumbnail
+                - category
+                - code
+                - status
+      responses:
+        '201':
+          description: Created
+    delete:
+      summary: Delete a product by ID
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: The ID of the product to delete
+      responses:
+        '204':
+          description: No Content

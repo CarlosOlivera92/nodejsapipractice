@@ -75,8 +75,6 @@ const swaggerOptions = {
     apis: [`${__mainDirname}/nodejsapipractice/docs/**/*.yaml`]
 }
 const specs = swaggerJsdoc(swaggerOptions);
-console.log(swaggerOptions)
-console.log(specs)
 
 app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
