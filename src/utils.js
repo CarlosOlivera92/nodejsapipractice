@@ -42,6 +42,7 @@ const transporter = nodemailer.createTransport({
       pass: 'sbvl idzw kccs kprv'
     }
 });
+const __mainDirname = path.join(__dirname, '..', '..'); ////asdasd/asdasdasd/asdasd/RecursosBackend-Adoptme
 
 export {
     productsFilePath,
@@ -52,4 +53,5 @@ export {
     generateUniqueCode,
     calculateTotalAmount,
     transporter,
+    __mainDirname
 }

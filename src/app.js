@@ -1,7 +1,7 @@
 import express from "express";
 import sessionsRouter from './routes/sessions.router.js';
 import handlebars from 'express-handlebars';
-import {__dirname} from "./utils.js"; // Importa __dirname desde utils.js
+import {__dirname, __mainDirname} from "./utils.js"; // Importa __dirname desde utils.js
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import { ObjectId } from "mongodb";
@@ -23,6 +23,9 @@ import ProductsRepository from "./repositories/products.repository.js";
 import { MocksRouter } from "./routes/mocks.js";
 import { addLogger } from "./logger.js";
 import LoggerRouter from "./routes/loggers.router.js";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
+
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
 const port = 8080;
@@ -60,7 +63,22 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
-// Configuración de nodemailer
+// Configuración de Swagger
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentación del proyecto de adopción de mascotas clase 39',
+            description: 'API pensada en resolver el proceso de adopción de mascotas.'
+        }
+    },
+    apis: [`${__mainDirname}/nodejsapipractice/docs/**/*.yaml`]
+}
+const specs = swaggerJsdoc(swaggerOptions);
+console.log(swaggerOptions)
+console.log(specs)
+
+app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 // Cookie Parser 
 app.use(cookieParser());
