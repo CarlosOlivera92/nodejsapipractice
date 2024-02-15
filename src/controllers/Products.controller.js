@@ -61,8 +61,7 @@ export default class ProductsController {
             const {pid} = req.params;
             const productId = new ObjectId(pid);
             const product = await this.productsRepository.getOne(productId);
-            console.log(productId)
-            const updatedProductData = req.body; 
+            const updatedProductData = req.body;
             if(!product) {
                 throw CustomError.createError({
                     name: 'error',
@@ -71,7 +70,7 @@ export default class ProductsController {
                     code: EErrors.PRODUCT_NOT_FOUND
                 })
             }
-            if (!title || !description || !price || !thumbnail || !category || !code || !status) {
+            if (!updatedProductData) {
                 throw CustomError.createError({
                     name: 'error',
                     cause: 'One or more properties are empty',
@@ -89,7 +88,8 @@ export default class ProductsController {
                 });
             }
             const updatedProduct = await this.productsRepository.updateOne(productId, updatedProductData);
-            res.status(200).json(updatedProduct);
+            console.log(updatedProduct)
+            res.status(204).send("Product updated successfuly")
         } catch (error) {
             next(error);
         }

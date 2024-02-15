@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema({
       validator: async function(value) {
         // Validar que el usuario sea premium
         const user = await mongoose.model('users').findOne({ email: value });
-        return user && user.role === 'PREMIUM';
+        return user && (user.role === 'PREMIUM' || user.role === "ADMIN");
       },
       message: 'El propietario debe ser un usuario premium.'
     }

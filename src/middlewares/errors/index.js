@@ -1,7 +1,7 @@
 import EErrors from "./enums.js";
 
 export default (error, req, res, next) => {
-    console.log(error.name)
+    console.log(error)
     switch (error.code) {
         case EErrors.ROUTING_ERROR:
             res.status(404).send({
@@ -68,7 +68,7 @@ export default (error, req, res, next) => {
             res.status(500).send({
                 status: 'error',
                 error: error.name,
-                description: error.cause || 'Unknown error'
+                description: error || 'Unknown error'
             });
             break;
     }
