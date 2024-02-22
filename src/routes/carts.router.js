@@ -15,7 +15,7 @@ export default class CartsRouter extends Router {
         this.put("/:cid/products/:pid",[accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.cartsController.updateProducts(req, res, next));
         this.delete("/:cid/products/:pid", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING,(req, res, next) => this.cartsController.deleteProduct(req, res, next));
         this.put("/:cid", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.cartsController.update(req, res, next));
-        this.delete("/:cid", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.cartsController.deleteAll(req, res, next));
+        this.delete("/:cid", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.cartsController.deleteCart(req, res, next));
         this.post('/:cid/purchase', [accessRolesEnum.USER], passportStrategiesEnum.JWT,this.authorize("USER") ,(req, res, next) => this.ticketController.purchase(req, res, next));
     }
 }

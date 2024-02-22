@@ -118,6 +118,7 @@ export default class CartsController {
                 res.status(404).send({ message: `Ya no hay productos por eliminar ${cartId}` });
             }
         } catch (error) {
+            console.log(error)
             res.status(500).send({ message: 'Ha habido un error en el servidor', error: error });
         }
     }
