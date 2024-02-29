@@ -25,6 +25,7 @@ import { addLogger } from "./logger.js";
 import LoggerRouter from "./routes/loggers.router.js";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
+import UsersRouter from "./routes/users.router.js";
 
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
@@ -39,6 +40,8 @@ const productsRouter = new ProductsRouter();
 const messagesRouter = new MessagesRouter();
 const mocksRouter = new MocksRouter();
 const messagesDao = new Messages();
+const usersRouter = new UsersRouter();
+
 const messagesRepository = new MessagesRepository(messagesDao);
 //Servidor archivos estaticos
 app.use(express.static(`${__dirname}/public`))
@@ -92,7 +95,7 @@ app.use(addLogger);
 //Routes
 app.use('/api/chat', messagesRouter.getRouter());
 app.use('/api/auth', authRouter.getRouter());
-
+app.use('/api/users', usersRouter.getRouter());
 app.use('/api/products', productsRouter.getRouter());
 app.use('/api/carts', cartsRouter.getRouter());
 app.use('/api/sessions', sessionsRouter);
