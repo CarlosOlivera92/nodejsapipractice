@@ -23,7 +23,14 @@ const usersSchema = new mongoose.Schema({
     },
     password: String,
     resetPasswordToken: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    documents: [
+        {
+            name: String,
+            reference: String
+        }
+    ],
+    last_connection: Date // Nueva propiedad para almacenar la última conexión
 });
 
 const UsersModel = mongoose.model(usersCollection, usersSchema);
