@@ -14,7 +14,6 @@ export default class AuthRouter extends Router{
         this.get('/logout', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING,  (req, res, next) => this.authController.logout(req, res, next) )
         this.get('/mail', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.forgotPassword(req, res, next));
         this.post('/reset-password', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.resetPassword(req, res, next));
-        this.post('/premium/:uid', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.getPremium(req, res, next));
     }
     
 }

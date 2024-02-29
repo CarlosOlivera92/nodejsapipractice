@@ -190,7 +190,7 @@ class AuthController {
     
             // Verificar si el usuario tiene los documentos requeridos cargados
             const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
-            const documentsUploaded = user.documents.map(doc => doc.originalname);
+            const documentsUploaded = user.documents ? user.documents.map(doc => doc.originalname) : [];
             const missingDocuments = requiredDocuments.filter(doc => !documentsUploaded.includes(doc));
             if (missingDocuments.length > 0) {
                 return res.status(400).json({ message: `Faltan los siguientes documentos: ${missingDocuments.join(', ')}` });
@@ -209,7 +209,7 @@ class AuthController {
         } catch (error) {
             throw new Error( error );
         }
-    }
+    }    
 }
 
 export default AuthController;
