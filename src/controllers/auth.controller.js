@@ -173,7 +173,6 @@ class AuthController {
     }
     async getPremium(req, res) {
         try {
-
             const { uid } = req.params;
             const id = new ObjectId(uid);
             const options = {
@@ -188,18 +187,25 @@ class AuthController {
                     code: EErrors.USER_NOT_FOUND
                 });
             };
-
+    
+            // Verificar si el usuario tiene los documentos requeridos cargados
+            const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+            const documentsUploaded = user.documents.map(doc => doc.originalname);
+            const missingDocuments = requiredDocuments.filter(doc => !documentsUploaded.includes(doc));
+            if (missingDocuments.length > 0) {
+                return res.status(400).json({ message: `Faltan los siguientes documentos: ${missingDocuments.join(', ')}` });
+            }
+    
+            // Actualizar el rol del usuario a premium
             const isPremium = user.role === accessRolesEnum.PREMIUM ? true : false;
-            console.log(isPremium)
             if (isPremium) {
                 user.role = accessRolesEnum.USER;
             } else {
                 user.role = accessRolesEnum.PREMIUM;
             }
-            console.log(user)
-
+    
             await this.usersRepository.update(user.id, user);
-            res.status(200).send({ status: 'success', message: 'Rol actualizado correctamente!' });
+            return res.status(200).send({ status: 'success', message: 'Rol actualizado correctamente!' });
         } catch (error) {
             throw new Error( error );
         }
