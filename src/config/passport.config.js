@@ -66,6 +66,9 @@ const initializePassport = () => {
             if (!user || !match) {
                 return done(null, false);
             }
+            const updatedUser = await usersRepository.update(user.id, { last_connection: Date.now() });
+            console.log(updatedUser)
+            console.log(Date.now())
             return done(null, user);
         } catch (error) {
             return done(error);

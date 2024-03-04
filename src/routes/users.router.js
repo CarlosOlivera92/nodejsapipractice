@@ -12,6 +12,7 @@ export default class UsersRouter extends Router{
     init() {
         this.post('/:uid/documents', [accessRolesEnum.USER], passportStrategiesEnum.JWT, (req, res, next) => this.usersController.uploadDocuments(req, res, next));
         this.post('/premium/:uid', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.getPremium(req, res, next));
+        this.delete('/deleteInactive', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.usersController.deleteInactive(req, res, next))
     }
     
 }

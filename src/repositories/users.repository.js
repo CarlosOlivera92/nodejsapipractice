@@ -37,4 +37,28 @@ export default class UsersRepository {
             throw new Error(`Error al actualizar el usuario: ${error.message}`);
         }
     }
+    deleteInactiveUsers = async () => {
+        try {
+            const now = new Date(); // Fecha y hora actual
+            const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000); // Fecha hace dos días
+    
+            const inactiveUsers = []; // Aquí almacenaremos los usuarios inactivos
+    
+            // Obtenemos la lista de usuarios inactivos de la base de datos
+            const userList = await this.dao.get();
+    
+            // Iteramos sobre cada usuario para determinar si han estado inactivos durante al menos dos días
+            for (const user of userList) {
+                const lastConnection = new Date(user.last_connection);
+                if (lastConnection < twoDaysAgo) {
+                    inactiveUsers.push(user);
+                    await this.dao.delete(user._id);
+                }
+            }
+    
+            console.log("Usuarios inactivos eliminados:", inactiveUsers);
+        } catch (error) {
+            throw new Error(`Error al eliminar usuarios inactivos: ${error.message}`);
+        }
+    }    
 }

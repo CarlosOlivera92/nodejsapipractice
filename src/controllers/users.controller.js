@@ -91,4 +91,12 @@ export default class UsersController {
             throw new Error(error)
         }
     }
+    deleteInactive = async (req, res, next) => {
+        try {
+            await this.usersRepository.deleteInactiveUsers();
+            return res.status(200).json({ message: 'Usuarios inactivos eliminados exitosamente.' });
+        } catch (error) {
+            return res.status(500).json({ message: `Error al eliminar usuarios inactivos: ${error.message}` });
+        }
+    }
 }
