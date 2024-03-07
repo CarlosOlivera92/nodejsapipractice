@@ -10,6 +10,7 @@ const EErrors = {
     UPDATING_PRODUCT_ERROR: 9,
     TOKEN_EXPIRED: 10,
     INVALID_PASSWORD:11,
+    ERROR_DURING_LOGIN: 12,
 }
 
 export default EErrors;

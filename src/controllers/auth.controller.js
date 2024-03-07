@@ -24,34 +24,32 @@ class AuthController {
     async getAllUsers(req, res) {
         try {
             const users = await this.usersRepository.getAll();
-            return res.status(200).send({status: "success", data: users})
+            // Mapeamos los usuarios para seleccionar solo los datos principales
+            const simplifiedUsers = users.map(user => ({
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }));
+            return res.status(200).send({status: "success", data: simplifiedUsers});
         } catch (error) {
-            throw new Error( error );
+            throw new Error(error);
         }
     }
+    
     async login(req, res) {
         passport.authenticate('login', (err, user, info) => {
-            if (!user) {
-                req.logger.error("error occoured during log in")
-                throw CustomError.createError({
-                    name: 'UserError',
-                    cause: 'User not in database',
-                    message: 'Error trying to log in, invalid credentials',
-                    code: EErrors.USER_NOT_FOUND
-                })
-            }
             if (err) {
-                req.logger.fatal("fatal error during login")
-                throw CustomError.createError({
-                    name: 'Fatal error',
-                    cause: err,
-                    message: err.message,
-                    code: EErrors.INTERNAL_SERVER_ERROR
-                })
+                req.logger.fatal("Fatal error during login:", err);
+                return res.status(500).send({ error: 'Internal server error' });
             }
-            
+    
+            if (!user) {
+                req.logger.error("Error trying to log in, invalid credentials");
+                return res.status(404).send({ error: 'User not found' });
+            }
+    
             const generatedToken = generateToken(user);
-            res.cookie('jwtToken', generatedToken, { httpOnly: true }); // Aquí configuras las opciones de la cookie según tu necesidad
+            res.cookie('jwtToken', generatedToken, { httpOnly: true }); // Configura las opciones de la cookie según tu necesidad
             req.session.user = {
                 name: user.name,
                 email: user.email,
@@ -59,7 +57,7 @@ class AuthController {
                 role: user.role,
                 jwtToken: generatedToken
             };
-            req.logger.info("test info logger");
+            req.logger.info("User logged in successfully");
             return res.status(200).send({ status: 'success', token: generatedToken });
         })(req, res);
     }
@@ -187,10 +185,11 @@ class AuthController {
                     code: EErrors.USER_NOT_FOUND
                 });
             };
-    
+
             // Verificar si el usuario tiene los documentos requeridos cargados
             const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
-            const documentsUploaded = user.documents ? user.documents.map(doc => doc.originalname) : [];
+            const documentsUploaded = user.documents ? user.documents.map(doc => doc.name) : [];
+
             const missingDocuments = requiredDocuments.filter(doc => !documentsUploaded.includes(doc));
             if (missingDocuments.length > 0) {
                 return res.status(400).json({ message: `Faltan los siguientes documentos: ${missingDocuments.join(', ')}` });

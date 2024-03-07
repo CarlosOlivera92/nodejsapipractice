@@ -6,5 +6,6 @@ export default class UsersDto {
         this.email = user.email;
         this.password = user.password;
         this.role = user.role;
+        this.documents = user.documents; // Agregando la parte de documentos
     }
 }

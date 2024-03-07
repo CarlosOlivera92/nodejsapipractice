@@ -53,25 +53,26 @@ const initializePassport = () => {
             return done(error);
         }
     }));
-    passport.use('login', new LocalStrategy( {
+    passport.use('login', new LocalStrategy({
         usernameField: 'email'
-    }, async(username, password, done) => {
+    }, async (username, password, done) => {
         try {
             const options = {
                 email: username
             };
-            const user = await usersRepository.getOne( options )
+            const user = await usersRepository.getOne(options)
             const match = await comparePasswords(password, user.password);
-
+    
             if (!user || !match) {
-                return done(null, false);
+                throw new CustomError({
+                    name: 'AuthenticationError',
+                    message: 'Invalid credentials'
+                });
             }
             const updatedUser = await usersRepository.update(user.id, { last_connection: Date.now() });
-            console.log(updatedUser)
-            console.log(Date.now())
             return done(null, user);
         } catch (error) {
-            return done(error);
+            return done(error); // Manejar el error aquí
         }
     }));
     passport.use('github', new GithubStrategy( {

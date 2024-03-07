@@ -14,17 +14,25 @@
             </div>
             <div class="buttons">
                 {{#if user}}
-                    <a href="/products"><button class="btn">Home</button></a>
-                    <a href="/realtimeproducts"><button class="btn">Productos</button></a>
-                    <a href="/chat"><button class="btn">Chat</button></a>
-                    <a href="/api/auth/logout"><button class="btn btn-danger">Salir</button></a>
-
+                    {{#if isAdmin}}
+                        <!-- Si el rol del usuario es ADMIN -->
+                        <a href="dashboard"><button class="btn">Dashboard</button></a>
+                        <a href="products"><button class="btn">Home</button></a>
+                        <a href="realtimeproducts"><button class="btn">Productos</button></a>
+                        <a href="chat"><button class="btn">Chat</button></a>
+                        <a href="api/auth/logout"><button class="btn btn-danger">Salir</button></a>
+                    {{else}}
+                        <!-- Si el rol del usuario no es ADMIN -->
+                        <a href="/products"><button class="btn">Home</button></a>
+                        <a href="/realtimeproducts"><button class="btn">Productos</button></a>
+                        <a href="/chat"><button class="btn">Chat</button></a>
+                        <a href="/api/auth/logout"><button class="btn btn-danger">Salir</button></a>
+                    {{/if}}
                 {{else}}
                     <a href="/login"><button class="btn btn-primary">Iniciar sesión</button></a>
                     <a href="/register"><button class="btn btn-light">Registrarse</button></a>
                 {{/if}}
             </div>
-
         </header>
         <div class="content container my-4">
             {{{ body }}}

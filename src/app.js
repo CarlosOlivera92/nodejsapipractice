@@ -139,4 +139,26 @@ socketServer.on('connection', socket => {
         const messages = await messagesRepository.get();
         socketServer.emit('messages', messages);
     })
+    // Evento para actualizar el rol de usuario
+    socket.on('updateUserRole', async ({ userId, newRole }) => {
+        try {
+            // Lógica para actualizar el rol de usuario en la base de datos
+            const updatedUser = await usersRepository.updateRole(userId, newRole);
+            socketServer.emit('userRoleUpdated', updatedUser); // Envia la actualización a todos los clientes conectados
+        } catch (error) {
+            console.error('Error al actualizar el rol de usuario:', error);
+        }
+    });
+
+    // Evento para eliminar un usuario
+    socket.on('deleteUser', async (userId) => {
+        try {
+            // Lógica para eliminar un usuario de la base de datos
+            await usersRepository.delete(userId);
+            socketServer.emit('userDeleted', userId); // Envia la actualización a todos los clientes conectados
+        } catch (error) {
+            console.error('Error al eliminar el usuario:', error);
+        }
+    });
+
 })

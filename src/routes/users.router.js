@@ -10,9 +10,11 @@ export default class UsersRouter extends Router{
         this.usersController = new UsersController();
     }
     init() {
+        this.get('/',[accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.getAllUsers(req, res, next));
         this.post('/:uid/documents', [accessRolesEnum.USER], passportStrategiesEnum.JWT, (req, res, next) => this.usersController.uploadDocuments(req, res, next));
         this.post('/premium/:uid', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.authController.getPremium(req, res, next));
         this.delete('/deleteInactive', [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.usersController.deleteInactive(req, res, next))
+        this.delete('/', [accessRolesEnum.ADMIN], passportStrategiesEnum.JWT, this.authorize("ADMIN"), (req, res, next) => this.usersController.deleteUser(req, res, next));
     }
     
 }

@@ -123,7 +123,6 @@ export default class Router {
         return callbacks.map((callback) => async (...params) => {
             try {
                 // Verificar el tipo de callback aquí
-                console.log(callback)
                 console.log(typeof callback); // Agregar esta línea para depurar
     
                 //apply, va a ejecutar la función callback, a la instancia de nuestra clase que es el router

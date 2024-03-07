@@ -1,15 +1,18 @@
 import ProductsRepository from "../repositories/products.repository.js";
-import { toPascalCase } from "../utils.js";
-import { Products } from "../dao/factory.js";
+import { transporter } from '../utils.js';
+import { Products, Users } from "../dao/factory.js";
 import MockedProducts from "../mocks/products.mocks.js";
 import CustomError from "../middlewares/errors/CustomError.js";
 import EErrors from "../middlewares/errors/enums.js";
 import { accessRolesEnum } from "../config/enums.js";
 import { ObjectId } from "mongodb";
+import UsersRepository from "../repositories/users.repository.js";
 const productsDao = new Products();
+const usersDao = new Users()
 export default class ProductsController {
     constructor() {
         this.productsRepository = new ProductsRepository(productsDao);
+        this.usersRepository = new UsersRepository(usersDao);
         this.getByQueries = this.getByQueries.bind(this);
         this.create = this.create.bind(this);
         this.updateOne = this.updateOne.bind(this);
@@ -99,7 +102,7 @@ export default class ProductsController {
             const {pid} = req.params;
             const productId = new ObjectId(pid);
             const product = await this.productsRepository.getOne(productId);
-            console.log(productId)
+            console.log(product)
             if (!product) {
                 throw CustomError.createError({
                     name: 'error',
@@ -117,7 +120,34 @@ export default class ProductsController {
                     code: EErrors.PERMISSION_DENIED
                 });
             }
+            const productOwnerEmail = product.owner;
+            const productOwner = await this.usersRepository.getOne( {email: productOwnerEmail});
+            console.log(productOwner);
             await this.productsRepository.deleteOne(productId);
+            // Envía un correo electrónico si el usuario es premium
+            if (productOwner.role === 'PREMIUM') {
+                transporter.sendMail({
+                    from: 'GoodGame Workshop',
+                    to: productOwner.email,
+                    subject: 'Producto eliminado',
+                    html: `
+                        <!DOCTYPE html>
+                        <html lang="es">
+                            <head>
+                                <meta charset="UTF-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>Recuperacion de contraseña</title>
+                            </head>
+                            <body>
+                                <p>¡Hola ${productOwner.name}!</p>
+                                <p>Recibiste este correo porque se ha eliminado un producto que te pertenecía</p>
+                                <p>Nombre: ${product.title}</p>
+                            </body>
+                        </html>
+                    `
+                });
+            }
+
             res.status(204).send({ status: 'success', message: "Product deleted successfully!" })
         } catch (error) {
             res.status(500).json({ error: error.message });

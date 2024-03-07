@@ -1,0 +1,35 @@
+<h1 class="mb-4">Administración de Usuarios</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users}}
+                <tr>
+                    <td>{{this._id}}</td>
+                    <td>{{this.first_name}} {{this.last_name}}</td>
+                    <td>{{this.role}}</td>
+                    <td>
+                        <form id="updateRoleForm-{{this._id}}">
+                            <select name="rol" class="form-select mb-2" {{#unless this.isChangeableRole}}disabled{{/unless}}>
+                                <option value="PREMIUM">Premium</option>
+                                <option value="USER">Usuario</option>
+                            </select>
+                        </form>
+                        <button type="submit" class="btn btn-primary btn-sm me-2" {{#unless this.isChangeableRole}}disabled{{/unless}} onclick="updateRole('{{this._id}}')">Modificar Rol</button>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="deleteUser('{{this._id}}')">Eliminar Usuario</button>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/dashboard.js"></script>

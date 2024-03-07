@@ -26,6 +26,13 @@ export default class ViewsRouter extends Router {
         this.get("/products", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.viewsController.getAllProducts(req, res, next));
         this.get("/products/:productId", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, this.getProductDetails);
         this.get("/reset-password", [accessRolesEnum.PUBLIC], passportStrategiesEnum.NOTHING, (req, res, next) => this.viewsController.resetPassword(req, res, next));
+        this.get(
+            '/dashboard',
+            [accessRolesEnum.ADMIN],
+            passportStrategiesEnum.JWT, 
+            this.authorize("ADMIN"),
+            (req, res, next) => this.viewsController.getDashboard(req, res, next) 
+        );
 
     }
 }

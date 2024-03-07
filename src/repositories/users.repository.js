@@ -23,7 +23,6 @@ export default class UsersRepository {
     }
     update = async (userId, updatedUser) => {
         try {
-            console.log(userId)
             const objectId = new ObjectId(userId);
             const user = await this.dao.getOne(objectId);
     
@@ -35,6 +34,16 @@ export default class UsersRepository {
             }
         } catch (error) {
             throw new Error(`Error al actualizar el usuario: ${error.message}`);
+        }
+    }
+    delete = async (userId) => {
+        const objectId = new ObjectId(userId);
+        const user = await this.dao.getOne(objectId);
+        if (user) {
+            const deletedUser = await this.dao.delete(userId);
+            return deletedUser; // Devuelve el usuario modificado
+        } else {
+            throw new Error('El usuario no fue encontrado');
         }
     }
     deleteInactiveUsers = async () => {
@@ -55,8 +64,10 @@ export default class UsersRepository {
                     await this.dao.delete(user._id);
                 }
             }
-    
+            
             console.log("Usuarios inactivos eliminados:", inactiveUsers);
+
+            return inactiveUsers;
         } catch (error) {
             throw new Error(`Error al eliminar usuarios inactivos: ${error.message}`);
         }
