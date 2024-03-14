@@ -1,4 +1,4 @@
-<h1 class="mb-4">Checkout</h1>
+
 {{#if cart}}
     <div class="cartContainer p-4 my-4">
         <h2>Tu carrito: </h2>
@@ -15,7 +15,9 @@
         {{/if}}
     </div>
 {{/if}}
-<form id="checkout-form">
+<h1 class="mb-4">Formulario de compra</h1>
+<h2>Para continuar el proceso de compra, deberá rellenar los siguientes campos con la información pertinente</h2>
+<form id="checkout-form" class="checkout-form">
     <div class="mb-3">
         <label for="telefono" class="form-label">Número de Teléfono:</label>
         <input type="tel" id="telefono" name="telefono" class="form-control" required>
@@ -38,5 +40,6 @@
             <input type="text" id="cvv" name="cvv" class="form-control" required>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Completar Compra</button>
+    <button id="submit-btn" type="submit" class="btn btn-primary">Completar Compra</button>
 </form>
+<script src="/js/checkout.js"></script>
