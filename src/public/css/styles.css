@@ -1,0 +1,218 @@
+body {
+    background-image: linear-gradient(45deg, #f1d5d5, #f1dee6, #aac7cf, #e9e7c1); /* Gradiente con cuatro colores */
+}
+.btn a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+.content {
+    width: 100%;
+    height: auto;
+    margin: auto;
+}
+
+.header {
+    background-color: #f9f9f9;
+}
+
+.signup-form {
+    width: 440px !important;
+    padding: 1rem;
+    max-width: 440px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f8f9;
+    border-radius:  7px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.signup-form .form {
+    display: flex;
+    flex-direction: column;
+    width: 100% ;
+    padding: 1rem;
+    margin: 0 ;
+    animation: appear 1s ease-in-out;
+}
+.signup-form .form input {
+    border: none;
+    width: 100%;
+    border-radius: 0.5rem;
+    padding: .3rem;
+    margin: 5px 0;
+    font-size: 16px;
+    background-color: #f4f8f9;
+    color: #333;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+.signup-form .form input:focus {
+    background-color: #fff; /* Cambiar el fondo al enfocar el campo */
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4); /* Cambiar la sombra al enfocar el campo */
+}
+.signup-form .form  .error {
+    color: #e81123;
+}
+.signup-form .form  .success {
+    color: #333;
+}
+.signup-form .form .form-button {
+    width: 10rem;
+    padding: .5rem;
+    color: #005da6; 
+    text-transform: uppercase;
+    font-weight: bolder;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0px 0px 5px #005da6;
+    transition: background-color 0.3s; /* Efecto de transición de color */
+  }
+  
+  .signup-form .form .form-button:hover {
+    background-color: #005da6;
+    color: #fff;
+  }
+  
+  .signup-form .form label {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .signup-form .form .error {
+    color: #ff0000;
+    font-size: 14px;
+  }
+  .signup-form .form .success {
+    color: #28a745;
+    font-size: 14px;
+  }
+
+.greetings {
+    background-color: #f4f8f9;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.cartContainer {
+    width: 100%;
+    background-color: #f4f8f9;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.product {
+    padding: 1rem;
+    margin: .5rem;
+    width: 20rem;
+    border-radius: 1rem;
+    background-color: #f4f8f9;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.products {
+    width: 100% !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1rem;
+}
+.products .product-form {
+    background-color: #3A3E76;
+    padding: 1rem;
+    color: #fff;
+    border-radius: 1rem;
+    margin: 1rem;
+}
+.product-form .form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.product-form .form .col {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+}
+.product-form .form .col .form-group {
+    display: flex;
+    flex-direction: column;
+}
+.product-form .form .col .form-group label {
+    padding: .5rem 0;
+}
+.product-form .form .col .form-group input, textarea {
+    border-radius: .3rem;
+}
+.product-form .form .row {
+    padding: 1rem 0;
+}
+.product-form .form .btn {
+    background-color: #CBCEFF;
+    border-radius: .7rem;
+    padding: .7rem;
+}
+.products-list {
+    width: 40%;
+}
+.products-list .images {
+    padding: 0 2rem;
+}
+.products-list .images img {
+    width: 20rem;
+}
+.checkout-form {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.checkout-form h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.checkout-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.checkout-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.checkout-form input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.checkout-form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.checkout-form .text-danger {
+    color: #dc3545;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.checkout-form .message-success {
+    color: #28a745;
+    margin-top: 5px;
+    font-size: 14px;
+}

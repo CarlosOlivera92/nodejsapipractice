@@ -5,9 +5,8 @@ class ProductManager {
         this.filePath = filePath;
         this.productCounter = 1;
         this.products = [];
+        this.loadProducts();
     }
-
-
     async loadProducts() {
         try {
             const data = await fs.readFile(this.filePath, 'utf8');
@@ -28,8 +27,8 @@ class ProductManager {
         }
     }
 
-    async addProduct(title, description, price, thumbnail, code, stock) {
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
+    async addProduct(title, description, price, thumbnail, category, code, status, stock) {
+        if (!title || !description || !price || !thumbnail || !category || !code || status === "undefined" || !stock) {
             console.error('Todos los campos son obligatorios.');
             return;
         }
@@ -39,14 +38,19 @@ class ProductManager {
             console.error('El producto con el código indicado ya existe.');
             return;
         }
-    
+        if (!Array.isArray(thumbnail) || thumbnail.some(item => typeof item !== 'string')) {
+            console.error('El campo "thumbnail" debe ser un array de strings.');
+            return;
+        }
         const product = {
             id: this.productCounter++,
             title,
             description,
             price,
             thumbnail,
+            category,
             code,
+            status,
             stock,
         };
     
@@ -60,7 +64,8 @@ class ProductManager {
     }
 
     async getProductById(id) {
-        const product = this.products.find(product => product.id === id);
+        const parsedId = parseInt(id);
+        const product = this.products.find(product => product.id === parsedId);
         return product || 'Producto no encontrado';
     }
 
@@ -73,8 +78,6 @@ class ProductManager {
             await this.saveProducts();
         }
     }
-    
-
     async deleteProduct(id) {  //Borrar un producto segun su id
         const index = this.products.findIndex(product => product.id === id);
         if (index !== -1) {

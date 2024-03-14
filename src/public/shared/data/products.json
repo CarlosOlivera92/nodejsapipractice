@@ -1,0 +1,47 @@
+[
+  {
+    "id": 2,
+    "title": "Red Dead Redemption 2",
+    "description": "Red Dead Redemption 2 te transporta a un épico viaje a través del Salvaje Oeste, donde la lealtad, la traición y la supervivencia son moneda corriente. Explora un vasto y hermoso paisaje, interactúa con una variedad de personajes memorables y vive la vida de un forajido en un mundo lleno de peligros y aventuras. ¿Tendrás lo necesario para sobrevivir en este implacable y despiadado oeste?",
+    "price": 22,
+    "thumbnail": [
+      "https://store-images.s-microsoft.com/image/apps.58752.68182501197884443.ac728a87-7bc1-4a0d-8bc6-0712072da93c.0cf58754-9802-46f8-8557-8d3ff32a627a?q=90&w=480&h=270",
+      "https://assetsio.reedpopcdn.com/red-dead-redemption-2-review-1540465569009.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp",
+      "https://www.mundodeportivo.com/alfabeta/hero/2023/08/red-dead-redemption-2.1691401687.6718.jpg?width=768&aspect_ratio=16:9&format=nowebp"
+    ],
+    "category": "Videojuego",
+    "code": "RDR2",
+    "status": false,
+    "stock": 44
+  },
+  {
+    "id": 3,
+    "title": "Rise of the Tomb Raider",
+    "description": "Rise of The Tomb Raider es un videojuego de acción-aventura desarrollado por Crystal Dynamics. Es el undécimo videojuego de la serie Tomb Raider.",
+    "price": 22,
+    "thumbnail": [
+      "https://www.muycomputer.com/wp-content/uploads/2016/01/rise-of-the-tomb-raider-4-1024x576.jpg",
+      "https://img.youtube.com/vi/1_FIyNcQSgA/maxresdefault.jpg",
+      "https://cdn.computerhoy.com/sites/navi.axelspringer.es/public/media/image/2016/02/150189-directx-12-rise-tomb-raider.jpg?tf=3840x"
+    ],
+    "category": "Videojuego",
+    "code": "ROTR",
+    "status": false,
+    "stock": 31
+  },
+  {
+    "id": 4,
+    "title": "Mortal Kombat 11",
+    "description": "Mortal Kombat 11 es un videojuego de lucha desarrollado por NetherRealm Studios y publicado por Warner Bros. Interactive Entertainment. Se ejecuta en una versión muy modificada de Unreal Engine 3, ​ es la undécima entrega principal de la serie Mortal Kombat y una secuela de 2015 Mortal Kombat X",
+    "price": 29,
+    "thumbnail": [
+      "https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/media/image/2020/11/mortal-kombat-11-ultimate-2139229.jpg?tf=3840x",
+      "https://i.ytimg.com/vi/86D2q2Uvg9M/maxresdefault.jpg",
+      "https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/media/image/2020/05/mortal-kombat-11-aftermath-1953703.jpg?tf=3840x"
+    ],
+    "category": "Videojuego",
+    "code": "MKXI",
+    "status": false,
+    "stock": 65
+  }
+]

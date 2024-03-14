@@ -1,0 +1,51 @@
+
+<div class="greetings container-fluid p-4">
+    <p>Bienvenido, {{{user.name}}}! </p>
+    <p>Role: {{{user.role}}}</p>
+    <p>Edad: {{{user.age}}}</p>
+    <p>Email: {{{user.email}}} </p>
+</div>
+{{#if cart}}
+    <div class="cartContainer p-4 my-4">
+        <h2>Tu carrito: </h2>
+        {{#if transformedProducts}} 
+            {{#each transformedProducts}}
+                <div class="product">
+                    <p>Titulo: {{this.title}} </p>
+                    <p>Precio: {{this.price}} </p>
+                    <p>ID: {{this.id}} </p>
+                    <p>Cantidad: {{this.quantity}}</p>
+                    <button class="btn btn-danger" onclick="delProductFromCart('{{this.id}}')">Eliminar del carrito</button>
+                </div>
+            {{/each}}
+        {{/if}}
+        <button class="btn btn-success">
+            <a href="checkout">Comprar</a>
+        </button>
+        <button class="btn btn-danger" onclick="deleteCart()">Eliminar carrito</button>
+    </div>
+{{/if}}
+<div class="products container-fluid d-flex flex-column align-items-center justify-content-center">
+    <h1>Lista de Productos</h1>
+    <div class="row row-cols-md-4 align-items-center justify-content-center">
+        {{#each products.payload}}
+        <div class="product col-md-4 p-3 ">
+            <p> Titulo {{this.title}}</p>
+            <p> Categoria: {{this.category}} </p>
+            <p> Precio: {{this.price}} </p>
+            <p> ID: {{this._id}} </p>
+            <button class="btn btn-primary" onclick="viewProductDetails('{{this._id}}')"><a class="text-light" href="/products/{{this._id}}">Ver Detalles</a>
+            </button>
+            <button class="btn btn-secondary" onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+        </div>
+        {{/each}}
+    </div>
+    {{#if products.hasNextPage}}
+        <a href="{{products.nextLink}}">Página siguiente</a>
+    {{/if}}
+    {{#if products.hasPrevPage}}
+        <a href="{{products.prevLink}}">Página anterior</a>
+    {{/if}}
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/products.js"></script>

@@ -1,78 +1,163 @@
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url"; // Importa fileURLToPath desde el módulo url
+import sessionsRouter from './routes/sessions.router.js';
+import handlebars from 'express-handlebars';
+import {__dirname, __mainDirname} from "./utils.js"; // Importa __dirname desde utils.js
+import { Server } from "socket.io";
+import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
+import errorHandler from './middlewares/errors/index.js';
+import AuthRouter from './routes/auth.router.js';
+import ViewsRouter from "./routes/views.router.js";
+import CartsRouter from "./routes/carts.router.js";
+import ProductsRouter from "./routes/products.router.js";
+import MessagesRouter from "./routes/messages.router.js";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import { initializePassport } from "./config/passport.config.js";
+import passport from "passport";
+import cookieParser from 'cookie-parser';
+import MessagesRepository from "./repositories/messages.repository.js";
+import { Messages } from "./dao/factory.js";
+import { Products } from "./dao/factory.js";
+import ProductsRepository from "./repositories/products.repository.js";
+import { MocksRouter } from "./routes/mocks.js";
+import { addLogger } from "./logger.js";
+import LoggerRouter from "./routes/loggers.router.js";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
+import UsersRouter from "./routes/users.router.js";
+import config from "./config/config.js";
 
-import { ProductManager } from "./shared/classes/product-manager.js"; // Importa la clase ProductManager directamente
+const productsDao = new Products();
+const productsRepository = new ProductsRepository(productsDao);
+const port = config.port || 3000;
+const app = express();
+
+const loggerRouter = new LoggerRouter();
+const authRouter = new AuthRouter();
+const viewsRouter = new ViewsRouter();
+const cartsRouter = new CartsRouter();
+const productsRouter = new ProductsRouter();
+const messagesRouter = new MessagesRouter();
+const mocksRouter = new MocksRouter();
+const messagesDao = new Messages();
+const usersRouter = new UsersRouter();
+const messagesRepository = new MessagesRepository(messagesDao);
+//Servidor archivos estaticos
+app.use(express.static(`${__dirname}/public`))
+
+//Motor de plantillas
+app.engine('handlebars', handlebars.engine())
+app.set('views', `${__dirname}/views`);
+app.set('view engine', 'handlebars');
+
+//Configuracion de Express
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
-// Convierte la URL actual en una ruta de archivo
-const __filename = fileURLToPath(import.meta.url);
-// Obtiene el directorio base
-const __dirname = path.dirname(__filename);
-
-const filePath = path.join(__dirname, 'shared/data', 'products.json').replace(/\\/g, '/');
-const manager = new ProductManager(filePath);
-const port = 8080;
-
-
-const server = express();
-
-server.use(express.urlencoded({ extended: true }));
-
-
-
-//Metodo comentado porque ya hay productos en el archivo Products.Json
-/*
-server.get('/add-product', (req, res) => {
-    const { title, description, price, thumbnail, code, stock } = req.query;
-    if (title && description && price && thumbnail && code && stock) {
-        // Convierte los valores necesarios a los tipos adecuados (por ejemplo, price a número)
-        const numericPrice = parseFloat(price);
-        const numericStock = parseInt(stock);
-
-        manager.addProduct(title, description, numericPrice, thumbnail, code, numericStock);
-        res.redirect('/'); // Redirigir a la página principal después de agregar el producto
-    } else {
-        res.status(400).send('Los parámetros de consulta son requeridos.');
-    }
-});
-*/
-
-server.get('/products', async (req, res) => {
-    try {
-        const { limit } = req.query;
-        await manager.loadProducts();
-        const products = await manager.getProducts();
-
-        if (limit && !isNaN(parseInt(limit))) {
-            const limitNumber = parseInt(limit);
-            const limitedProducts = products.slice(0, limitNumber);
-            res.json(limitedProducts);
-        } else {
-            res.json(products);
+//Configuración de sesión
+app.use(session({
+    store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+        ttl: 3000
+    }),
+    secret: "Coder256SecretKey",
+    resave: false,
+    saveUninitialized: false,
+}));
+// Configuración de Swagger
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentación del proyecto de adopción de mascotas clase 39',
+            description: 'API pensada en resolver el proceso de adopción de mascotas.'
         }
-    } catch (error) {
-        console.error('Error al obtener productos:', error);
-        res.status(500).json({ error: 'Error al obtener productos.' });
-    }
-});
+    },
+    apis: [`${__mainDirname}/nodejsapipractice/docs/**/*.yaml`]
+}
+const specs = swaggerJsdoc(swaggerOptions);
 
-server.get('/products/:pid', async (req, res) => {
-    try {
-        await manager.loadProducts();
-        const productId = parseInt(req.params.pid);
-        const selectedProduct = await manager.getProductById(productId);
+app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
-        if (selectedProduct === 'Producto no encontrado') {
-            res.status(404).json({ error: 'Producto no encontrado' });
-        } else {
-            res.json(selectedProduct);
+// Cookie Parser 
+app.use(cookieParser());
+
+//Passport config
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Logger
+app.use(addLogger);
+
+//Routes
+app.use('/api/chat', messagesRouter.getRouter());
+app.use('/api/auth', authRouter.getRouter());
+app.use('/api/users', usersRouter.getRouter());
+app.use('/api/products', productsRouter.getRouter());
+app.use('/api/carts', cartsRouter.getRouter());
+app.use('/api/sessions', sessionsRouter);
+app.use('/api/mocks', mocksRouter.getRouter());
+app.use('/api/logger', loggerRouter.getRouter());
+app.use('/', viewsRouter.getRouter());
+app.use(errorHandler);
+
+//Levantar servidor
+const server = app.listen(port, () => {
+    console.log(` listening on port: ${port}`);
+})
+//Socket IO
+const socketServer = new Server(server);
+
+socketServer.on('connection', socket => {
+    console.log('Nuevo cliente conectado')
+    socket.on('addProduct', async(productData) => {
+        try {
+            productsRepository.save(productData);
+            const addedProducts = await productsRepository.getAll();
+            socketServer.emit('newProducts', { products: addedProducts }); // Envia la actualización al cliente que la solicitó
+        } catch (error) {
+                console.error('Error al agregar el producto:', error);
+            }
+        });
+    socket.on('delProduct', async(productId) => {
+        try {
+            const id = new ObjectId(productId);
+            productsRepository.deleteOne(id);
+            const updatedProducts = await productsRepository.getAll();
+            console.log(updatedProducts)
+            socketServer.emit('newProducts', { products: updatedProducts }); // Envia la actualización al cliente que la solicitó
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
         }
-    } catch (error) {
-        console.error('Error al obtener el producto:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
-});
-server.listen(port, () => {
-    console.log('Server listening on port: 8080');
-});
+    })
+    socket.on('message', async(newMessage) => {
+        console.log(newMessage)
+        await messagesRepository.save(newMessage);
+        const messages = await messagesRepository.get();
+        socketServer.emit('messages', messages);
+    })
+    // Evento para actualizar el rol de usuario
+    socket.on('updateUserRole', async ({ userId, newRole }) => {
+        try {
+            // Lógica para actualizar el rol de usuario en la base de datos
+            const updatedUser = await usersRepository.updateRole(userId, newRole);
+            socketServer.emit('userRoleUpdated', updatedUser); // Envia la actualización a todos los clientes conectados
+        } catch (error) {
+            console.error('Error al actualizar el rol de usuario:', error);
+        }
+    });
+    // Evento para eliminar un usuario
+    socket.on('deleteUser', async (userId) => {
+        try {
+            // Lógica para eliminar un usuario de la base de datos
+            await usersRepository.delete(userId);
+            socketServer.emit('userDeleted', userId); // Envia la actualización a todos los clientes conectados
+        } catch (error) {
+            console.error('Error al eliminar el usuario:', error);
+        }
+    });
+
+})
