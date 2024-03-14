@@ -20,7 +20,7 @@ export default class CartsRepository {
             const createdCart = await this.dao.create(cartData);
             return createdCart;
         } catch (error) {
-            throw new Error('Error al crear un carrito');
+            throw new Error(`Error al crear el carrito: ${error}`);
         }
     }
 
@@ -28,10 +28,6 @@ export default class CartsRepository {
         try {
             let options = { _id: cartId}
             const cart = await this.dao.getOne(options);
-            if (cart) {
-                const cartDto = new CartsDto(cart);
-                return cartDto;
-            }
             return cart;
         } catch (error) {
             throw new Error(error);

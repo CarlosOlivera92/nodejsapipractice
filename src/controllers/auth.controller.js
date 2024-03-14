@@ -55,7 +55,8 @@ class AuthController {
                 email: user.email,
                 age: user.age,
                 role: user.role,
-                jwtToken: generatedToken
+                jwtToken: generatedToken,
+                cart: user.cart,
             };
             req.logger.info("User logged in successfully");
             return res.status(200).send({ status: 'success', token: generatedToken });

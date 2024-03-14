@@ -1,0 +1,42 @@
+<h1 class="mb-4">Checkout</h1>
+{{#if cart}}
+    <div class="cartContainer p-4 my-4">
+        <h2>Tu carrito: </h2>
+        {{#if transformedProducts}} 
+            {{#each transformedProducts}}
+                <div class="product">
+                    <p>Titulo: {{this.title}} </p>
+                    <p>Precio: {{this.price}} </p>
+                    <p>ID: {{this.id}} </p>
+                    <p>Cantidad: {{this.quantity}}</p>
+                    <button class="btn btn-danger" onclick="delProductFromCart('{{this.id}}')">Eliminar del carrito</button>
+                </div>
+            {{/each}}
+        {{/if}}
+    </div>
+{{/if}}
+<form id="checkout-form">
+    <div class="mb-3">
+        <label for="telefono" class="form-label">Número de Teléfono:</label>
+        <input type="tel" id="telefono" name="telefono" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="correo" class="form-label">Correo Electrónico:</label>
+        <input type="email" id="correo" name="correo" class="form-control" value="{{correo}}" required>
+    </div>
+    <div class="mb-3">
+        <label for="tarjeta" class="form-label">Número de Tarjeta:</label>
+        <input type="text" id="tarjeta" name="tarjeta" class="form-control" required>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <label for="expiracion" class="form-label">Fecha de Expiración:</label>
+            <input type="text" id="expiracion" name="expiracion" class="form-control" required>
+        </div>
+        <div class="col">
+            <label for="cvv" class="form-label">CVV:</label>
+            <input type="text" id="cvv" name="cvv" class="form-control" required>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Completar Compra</button>
+</form>

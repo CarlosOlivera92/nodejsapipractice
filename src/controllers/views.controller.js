@@ -5,6 +5,8 @@ import MessagesRepository from "../repositories/messages.repository.js";
 import { Carts } from "../dao/factory.js";
 import CartsRepository from "../repositories/carts.repository.js";
 import UsersRepository from '../repositories/users.repository.js';
+import { ObjectId } from "mongodb";
+
 const cartsDao = new Carts();
 const productsDao = new Products();
 const messagesDao = new Messages()
@@ -28,17 +30,42 @@ export default class ViewsController {
     async getAllProducts(req, res) {
         try {
             const products = await this.productsRepository.getByQueries(req, res);
-    
+            const user = req.session.user;
             const isAdmin = req.session.user && req.session.user.role === 'ADMIN';
-            console.log(isAdmin)
+            const cartId = user.cart;
+            let cart = await this.cartsRepository.getCartById(cartId);
+            let transformedProducts = [];
+            
+            if (!cart) {
+                cart = undefined;
+            } else {
+                const cartProducts = cart.products;
+                if (cartProducts) {
+                    // Iterar sobre los productos en el carrito
+                    cartProducts.forEach(item => {
+                        // Crear un nuevo objeto con las propiedades deseadas
+                        const transformedProduct = {
+                            id: item.productId._id,
+                            title: item.productId.title,
+                            price: item.productId.price,
+                            description: item.productId.description,
+                            quantity: item.quantity
+                        };
+                        // Agregar el nuevo objeto al array de productos transformados
+                        transformedProducts.push(transformedProduct);
+                    });
+                }
+            }
+            
             // Renderizar la vista, pasando los productos y la información sobre si el usuario es un administrador
-            res.render('products', { layout: 'main', products, user: req.session.user, isAdmin });
+            res.render('products', { layout: 'main', products, user: req.session.user, isAdmin, cart, transformedProducts, cartId: cartId });
         } catch (error) {
             // Manejar cualquier error que ocurra durante la obtención de los productos
             console.error('Error al obtener los productos:', error);
             res.status(500).send('Error interno del servidor');
         }
     }
+    
     
 
     async cart(req, res) {
@@ -58,6 +85,39 @@ export default class ViewsController {
         res.render('chat', {messages: messages, user:req.session.user}, isAdmin);
     }
 
+    async checkout(req, res) {
+        try {
+            const user = req.session.user;
+            const isAdmin = req.session.user && req.session.user.role === 'ADMIN';
+            const cartId = new ObjectId(user.cart);
+            const cart = await this.cartsRepository.getCartById(cartId)
+            let transformedProducts = [];
+            if (!cart) {
+                cart = undefined;
+            } else {
+                const cartProducts = cart.products;
+                console.log(cart)
+                if (cartProducts) {
+                    // Iterar sobre los productos en el carrito
+                    cartProducts.forEach(item => {
+                        // Crear un nuevo objeto con las propiedades deseadas
+                        const transformedProduct = {
+                            id: item.productId._id,
+                            title: item.productId.title,
+                            price: item.productId.price,
+                            description: item.productId.description,
+                            quantity: item.quantity
+                        };
+                        // Agregar el nuevo objeto al array de productos transformados
+                        transformedProducts.push(transformedProduct);
+                    });
+                }
+            }
+            res.render('checkout', {cart: cart, user, isAdmin, transformedProducts});
+        } catch (error) {
+            res.status(500).send('Error interno del servidor ' + error);
+        }
+    }
     async realtimeProducts(req, res) {
         const isAdmin = req.session.user && req.session.user.role === 'ADMIN';
         const products = await this.productsRepository.getByQueries(req, res);

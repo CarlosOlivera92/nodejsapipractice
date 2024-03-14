@@ -81,7 +81,7 @@ export default class ProductsRepository {
         try {
             const options = { _id: productId}
             const product = await this.dao.getOne(options);
-            return product ? product.toObject() : null;
+            return product;
         } catch (error) {
             throw new Error("Error al obtener el producto: " + error);
         }

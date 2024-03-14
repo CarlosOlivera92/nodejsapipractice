@@ -22,43 +22,52 @@ export default class TicketController {
             const cart = await this.cartsRepository.getCartById(cartId);
             const productsToPurchase = cart.products;
             const productsNotPurchased = [];
+    
             for (const item of productsToPurchase) {
                 const product = item.productId;
                 const quantityInCart = item.quantity;
-          
+    
                 if (product.stock >= quantityInCart) {
-                  // Suficiente stock para comprar
-                  product.stock -= quantityInCart;
-                  await this.productsRepository.updateProductStock(product._id, product.stock);
+                    // Suficiente stock para comprar
+                    product.stock -= quantityInCart;
+                    await this.productsRepository.updateProductStock(product._id, product.stock);
                 } else {
-                  // No hay suficiente stock para comprar
-                  productsNotPurchased.push(product._id);
-                  continue;
+                    // No hay suficiente stock para comprar
+                    productsNotPurchased.push(product._id);
                 }
             }
-
-            // Crear el ticket con los datos de la compra
-            const ticketData = {
-                code: generateUniqueCode(), // Generar un código único para el ticket
-                purchase_datetime: new Date(),
-                amount: calculateTotalAmount(productsToPurchase),
-                purchaser: req.user.email, 
-            };
-
-            const newTicket = await this.ticketsRepository.createTicket(ticketData);
-            console.log(ticketData)
-            // Actualizar el carrito para contener solo los productos no comprados
-            cart.products = cart.products.filter(item => productsNotPurchased.includes(item.product));
-        
-            await this.cartsRepository.updateCart(cartId, cart);
-        
-            res.status(200).json({
-              message: 'Compra finalizada con éxito',
-              ticket: newTicket,
-              productsNotPurchased,
-            });
+    
+            if (productsNotPurchased.length === 0) {
+                // Todos los productos se compraron con éxito, eliminamos el carrito
+                await this.cartsRepository.deleteCart(cartId);
+    
+                // Crear el ticket con los datos de la compra
+                const ticketData = {
+                    code: generateUniqueCode(), // Generar un código único para el ticket
+                    purchase_datetime: new Date(),
+                    amount: calculateTotalAmount(productsToPurchase),
+                    purchaser: req.user.email, 
+                };
+    
+                const newTicket = await this.ticketsRepository.createTicket(ticketData);
+    
+                res.status(200).json({
+                    message: 'Compra finalizada con éxito',
+                    ticket: newTicket,
+                });
+            } else {
+                // Al menos un producto no se pudo comprar, actualizamos el carrito
+                cart.products = cart.products.filter(item => !productsNotPurchased.includes(item.productId));
+                await this.cartsRepository.updateCart(cartId, cart);
+    
+                res.status(200).json({
+                    message: 'Algunos productos no se pudieron comprar, el carrito se ha actualizado',
+                    productsNotPurchased,
+                });
+            }
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     }
+    
 }

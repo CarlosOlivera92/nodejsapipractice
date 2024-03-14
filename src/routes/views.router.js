@@ -1,9 +1,7 @@
-import { ObjectId } from "mongodb";
 import Router from "./router.js";
 import { accessRolesEnum, passportStrategiesEnum } from "../config/enums.js";
 import ViewsController from "../controllers/views.controller.js";
 import ProductsController from "../controllers/Products.controller.js";
-import passport from "passport";
 export default class ViewsRouter extends Router {
     constructor() {
         super();
@@ -33,6 +31,12 @@ export default class ViewsRouter extends Router {
             this.authorize("ADMIN"),
             (req, res, next) => this.viewsController.getDashboard(req, res, next) 
         );
-
+        this.get(
+            '/checkout',
+            [accessRolesEnum.PREMIUM, accessRolesEnum.USER],
+            passportStrategiesEnum.JWT, 
+            this.authorize(["PREMIUM", "USER"]),
+            (req, res, next) => this.viewsController.checkout(req, res, next) 
+        );
     }
 }

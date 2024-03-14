@@ -5,9 +5,9 @@ import ProductsRepository from "../repositories/products.repository.js";
 import { Products } from "../dao/factory.js";
 import { ObjectId } from "mongodb";
 import UsersRepository from "../repositories/users.repository.js";
-
+import CartsDto from "../DTO/carts.dto.js";
 const usersDao = new Users()
-const cartsDao = new Carts;
+const cartsDao = new Carts();
 const productsDao = new Products();
 
 export default class CartsController {
@@ -22,10 +22,32 @@ export default class CartsController {
     async getAll(req, res) {
         try {
             const carts = await this.cartsRepository.getCarts();
-            res.status(200).send(carts);
+            const cartsDto = carts.map(cart => new CartsDto(cart)); // Transformar los datos usando el DTO
+            res.status(200).send(cartsDto);
         } catch (error) {
             res.status(500).send({ message: 'Ha habido un error en el servidor', error: error });
         }
+    }
+    async createCartWithProduct(userId, product) {
+        const newObjUserId = new ObjectId(userId);
+        const productInCart = {
+            productId: product._id,
+            quantity: 1,
+        };
+
+        const newCart = {
+            products: [productInCart],
+            user: userId,
+        };
+    
+        const createdCart = await this.cartsRepository.createCart(newCart);
+        const updatedUser = await this.usersRepository.update(userId, { cart: createdCart._id });
+
+        console.log(createdCart)
+        // Actualizar el usuario con el nuevo carrito
+        await this.usersRepository.update(userId, { cart: createdCart._id });
+    
+        return createdCart;
     }
     async createCart(req, res) {
         try {
@@ -41,30 +63,21 @@ export default class CartsController {
                 return res.status(403).send("No puedes agregar tu propio producto a tu carrito.");
             }
             if (!cartId) {
-                const productInCart = {
-                    productId: product._id,
-                    quantity: 1,
-                };
-                const newCart = {
-                    products: [productInCart],
-                };
-    
-                const createdCart = await this.cartsRepository.createCart(newCart);
-                const createdCartId = createdCart._id;
-    
-                // Actualizar el usuario con el nuevo carrito
-                const updatedUser = await this.usersRepository.update(userId, { cart: createdCartId });
-    
+                const createdCart = await this.createCartWithProduct(userId, product);
                 return res.status(201).send({
-                    message: `Se ha creado un nuevo carrito con ID: ${createdCartId} y se ha agregado el producto.`,
-                    data: { cart: createdCart, user: updatedUser },
+                    message: `Se ha creado un nuevo carrito con ID: ${createdCart.id} y se ha agregado el producto.`,
+                    data: { cart: createdCart.id},
                 });
             }
-    
-            const existingCart = await this.cartsRepository.getCartById(new ObjectId(cartId));
+            const newObjCartId = new ObjectId(cartId);
+            const existingCart = await this.cartsRepository.getCartById(newObjCartId);
     
             if (!existingCart) {
-                return res.status(404).send('El carrito especificado no se encontró.');
+                const createdCart = await this.createCartWithProduct(userId, product);
+                return res.status(201).send({
+                    message: `Se ha creado un nuevo carrito con ID: ${createdCart.id} y se ha agregado el producto.`,
+                    data: { cart: createdCart.id},
+                });
             }
             // Verificar si el producto ya está en el carrito
             const existingProductIndex = existingCart.products.findIndex(item => String(item.productId._id) === String(product._id));
@@ -86,7 +99,7 @@ export default class CartsController {
     
             return res.status(200).send({
                 message: 'Se ha agregado el producto al carrito existente y se ha asociado al usuario.',
-                data: { cart: existingCart, user: updatedUser }
+                data: { cart: existingCart.id }
             });
     
         } catch (error) {
@@ -107,15 +120,52 @@ export default class CartsController {
             res.status(500).send({ message: 'Ha habido un error en el servidor', error: error });
         }
     }
-
+    async deleteProduct(req, res) {
+        try {
+            const { cid, pid } = req.params;
+            const objCartId = new ObjectId(cid);
+            if (!cid || !objCartId) {
+                return res.status(400).json({ message: "El ID proporcionado es incorrecto y no se pudo procesar la solicitud" });
+            }
+    
+            const cart = await this.cartsRepository.getCartById(objCartId);
+            
+            if (!cart) {
+                return res.status(404).json({ message: "No se ha encontrado el carrito" });
+            }
+            const productsInCart = cart.products;
+            // Buscar el producto en el carrito
+            const productIndex = productsInCart.findIndex(item => item.productId.id === pid);
+            if (productIndex === -1) {
+                return res.status(404).json({ message: "Producto no encontrado en el carrito" });
+            }
+            // Verificar la cantidad del producto en el carrito
+            const productQuantity = productsInCart[productIndex].quantity;
+            console.log(productQuantity)
+            // Si la cantidad es mayor que 1, restar 1 a la cantidad
+            if (productQuantity > 1) {
+                productsInCart[productIndex].quantity -= 1;
+            } else {
+                productsInCart.splice(productIndex, 1);
+            }
+    
+            // Guardar los cambios en la base de datos
+            const updatedCart = await this.cartsRepository.updateCart(objCartId, cart);
+            // Responder con el carrito actualizado
+            return res.status(200).json({ message: "Producto actualizado en el carrito", updatedCart });
+        } catch (error) {
+            return res.status(500).json({ message: 'Ha habido un error en el servidor', error: error });
+        }
+    }
+    
     async deleteCart(req, res) {
         try {
             const cartId = new ObjectId(req.params.cid);
             const result = await this.cartsRepository.deleteCart(cartId);
             if (result) {
-                res.status(200).send({ message: `Se han eliminado todos los productos del carrito ${cartId}` });
+                res.status(200).send({ message: `Se ha eliminado el carrito ${cartId}` });
             } else {
-                res.status(404).send({ message: `Ya no hay productos por eliminar ${cartId}` });
+                res.status(404).send({ message: `No se pudo encontrar el carrito con ID: ${cartId}` });
             }
         } catch (error) {
             console.log(error)

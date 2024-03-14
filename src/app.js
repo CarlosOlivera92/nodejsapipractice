@@ -26,6 +26,7 @@ import LoggerRouter from "./routes/loggers.router.js";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import UsersRouter from "./routes/users.router.js";
+import ViewsController from "./controllers/views.controller.js";
 
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
@@ -41,7 +42,7 @@ const messagesRouter = new MessagesRouter();
 const mocksRouter = new MocksRouter();
 const messagesDao = new Messages();
 const usersRouter = new UsersRouter();
-
+const viewsController = new ViewsController();
 const messagesRepository = new MessagesRepository(messagesDao);
 //Servidor archivos estaticos
 app.use(express.static(`${__dirname}/public`))
@@ -149,7 +150,6 @@ socketServer.on('connection', socket => {
             console.error('Error al actualizar el rol de usuario:', error);
         }
     });
-
     // Evento para eliminar un usuario
     socket.on('deleteUser', async (userId) => {
         try {

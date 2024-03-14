@@ -13,39 +13,86 @@ let token = localStorage.getItem('jwtToken') || null;
 const viewProductsDetails = (productId) => {
     window.location.href = `/products/${productId}`;
 }
+const delProductFromCart = async(productId) => {
+    try {
+        const response = await fetch(`/api/carts/${cart}/products/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (response.status === 200) {
+            const responseData = await response.json();
+            console.log(responseData);
+            alert('Producto eliminado del carrito correctamente!');
+            window.location.reload();
 
-const addToCart = async (productId) => {
-    let data = {
-        productId: productId,
-        cartId: cart,
-    };
-    console.log(JSON.stringify(data))
-    fetch('/api/carts/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-    })
-    .then(async (response) => {
-        if (response.status === 201 || response.status === 200) {
-            return response.json();
+        } else {
+            throw new Error('Error al eliminar el producto del carrito');
         }
-        throw new Error('Error al agregar el producto al carrito');
-    })
-    .then((data) => {
-        alert('Producto añadido al carrito correctamente');
-        if(cart == null) {
-            cart = data.data.cart; 
-            localStorage.setItem('cart', cart._id); 
-        } 
-    })
-    .catch((error) => {
+    } catch(error) {
+        console.error('Error:', error);
+        alert('Error al eliminar el producto del carrito');
+    }
+}
+const deleteCart = async() => {
+    try {
+        const response = await fetch(`/api/carts/${cart}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (response.status === 200) {
+            const responseData = await response.json();
+            console.log(responseData);
+            alert('Carrito eliminado correctamente!');
+            localStorage.removeItem('cart');
+            cart = null; 
+            window.location.reload();
+        } else {
+            throw new Error('Error al eliminar el carrito');
+        }
+    } catch(error) {
+        console.error('Error:', error);
+        alert('Error al eliminar el carrito');
+    }
+}
+const addToCart = async (productId) => {
+    try {
+        let data = {
+            productId: productId,
+            cartId: cart, // Enviar solo el ID del carrito
+        };
+        const response = await fetch('/api/carts/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        });
+        
+        if (response.status === 201 || response.status === 200) {
+            const responseData = await response.json();
+            console.log(responseData); // Agrega este registro para verificar si el ID del carrito se obtiene correctamente
+            alert('Producto añadido al carrito correctamente');
+            cart = responseData.data.cart; // Obtener solo el ID del carrito
+            localStorage.setItem('cart', cart); // Guardar solo el ID del carrito en el localStorage
+            console.log('Cart ID:', cart); // Agrega este registro para verificar si el valor de cart se actualiza correctamente
+            window.location.reload();
+
+        } else {
+            throw new Error('Error al agregar el producto al carrito');
+        }
+    } catch (error) {
         console.error('Error:', error);
         alert('Error al agregar el producto al carrito');
-    });
+    }
 }
+
 
 
 
