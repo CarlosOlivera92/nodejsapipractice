@@ -26,11 +26,11 @@ import LoggerRouter from "./routes/loggers.router.js";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import UsersRouter from "./routes/users.router.js";
-import ViewsController from "./controllers/views.controller.js";
+import config from "./config/config.js";
 
 const productsDao = new Products();
 const productsRepository = new ProductsRepository(productsDao);
-const port = 8080;
+const port = config.port || 3000;
 const app = express();
 
 const loggerRouter = new LoggerRouter();
@@ -42,14 +42,13 @@ const messagesRouter = new MessagesRouter();
 const mocksRouter = new MocksRouter();
 const messagesDao = new Messages();
 const usersRouter = new UsersRouter();
-const viewsController = new ViewsController();
 const messagesRepository = new MessagesRepository(messagesDao);
 //Servidor archivos estaticos
 app.use(express.static(`${__dirname}/public`))
 
 //Motor de plantillas
 app.engine('handlebars', handlebars.engine())
-app.set('views', `${__dirname}\\views`);
+app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 
 //Configuracion de Express
@@ -106,7 +105,7 @@ app.use('/', viewsRouter.getRouter());
 app.use(errorHandler);
 
 //Levantar servidor
-const server = app.listen(8080, () => {
+const server = app.listen(port, () => {
     console.log(` listening on port: ${port}`);
 })
 //Socket IO

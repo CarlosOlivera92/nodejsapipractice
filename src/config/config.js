@@ -6,4 +6,5 @@ export default {
     persistence: process.env.PERSISTENCE,
     mongoUrl: process.env.MONGO_URL,
     privateKey: process.env.PRIVATE_KEY_JWT,
+    port: process.env.PORT
 }

@@ -96,7 +96,6 @@ export default class ViewsController {
                 cart = undefined;
             } else {
                 const cartProducts = cart.products;
-                console.log(cart)
                 if (cartProducts) {
                     // Iterar sobre los productos en el carrito
                     cartProducts.forEach(item => {
