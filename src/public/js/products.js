@@ -1,5 +1,3 @@
-
-
 const socket = io();
 const form = document.getElementById('form');
 const delProductForm = document.getElementById('delProductForm');
@@ -9,12 +7,13 @@ const productList = document.getElementById('product-list');
 let cart = localStorage.getItem('cart') || null;
 let token = localStorage.getItem('jwtToken') || null;
 
-
 const viewProductsDetails = (productId) => {
     window.location.href = `/products/${productId}`;
-}
+};
+
 const delProductFromCart = async(productId) => {
     try {
+        showLoadingSpinner();
         const response = await fetch(`/api/carts/${cart}/products/${productId}`, {
             method: 'DELETE',
             headers: {
@@ -25,19 +24,22 @@ const delProductFromCart = async(productId) => {
         if (response.status === 200) {
             const responseData = await response.json();
             console.log(responseData);
-            alert('Producto eliminado del carrito correctamente!');
+            showToast('Producto eliminado del carrito correctamente', false);
             window.location.reload();
-
         } else {
             throw new Error('Error al eliminar el producto del carrito');
         }
     } catch(error) {
         console.error('Error:', error);
-        alert('Error al eliminar el producto del carrito');
+        showToast('Error al eliminar el producto del carrito', true);
+    } finally {
+        hideLoadingSpinner();
     }
-}
+};
+
 const deleteCart = async() => {
     try {
+        showLoadingSpinner();
         const response = await fetch(`/api/carts/${cart}`, {
             method: 'DELETE',
             headers: {
@@ -48,7 +50,7 @@ const deleteCart = async() => {
         if (response.status === 200) {
             const responseData = await response.json();
             console.log(responseData);
-            alert('Carrito eliminado correctamente!');
+            showToast('Carrito eliminado correctamente', false);
             localStorage.removeItem('cart');
             cart = null; 
             window.location.reload();
@@ -57,15 +59,19 @@ const deleteCart = async() => {
         }
     } catch(error) {
         console.error('Error:', error);
-        alert('Error al eliminar el carrito');
+        showToast('Error al eliminar el carrito', true);
+    } finally {
+        hideLoadingSpinner();
     }
-}
+};
+
 const addToCart = async (productId) => {
     try {
         let data = {
             productId: productId,
             cartId: cart, // Enviar solo el ID del carrito
         };
+        showLoadingSpinner();
         const response = await fetch('/api/carts/', {
             method: 'POST',
             headers: {
@@ -74,27 +80,24 @@ const addToCart = async (productId) => {
             },
             body: JSON.stringify(data),
         });
-        
+
         if (response.status === 201 || response.status === 200) {
             const responseData = await response.json();
             console.log(responseData); // Agrega este registro para verificar si el ID del carrito se obtiene correctamente
-            alert('Producto añadido al carrito correctamente');
+            showToast('Producto añadido al carrito', false);
             cart = responseData.data.cart; // Obtener solo el ID del carrito
             localStorage.setItem('cart', cart); // Guardar solo el ID del carrito en el localStorage
             console.log('Cart ID:', cart); // Agrega este registro para verificar si el valor de cart se actualiza correctamente
             window.location.reload();
-
         } else {
             throw new Error('Error al agregar el producto al carrito');
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error al agregar el producto al carrito');
+        showToast('Error al agregar el producto al carrito', true);
+    } finally {
+        hideLoadingSpinner();
     }
-}
-
-
-
+};
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -148,9 +151,10 @@ socket.on('newProducts', (products) => {
         productList.innerHTML += productItem;
     }
 });
+
 delProductForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(delProductForm);
     const productId = formData.get('productId');
     socket.emit('delProduct', productId);
-})
+});

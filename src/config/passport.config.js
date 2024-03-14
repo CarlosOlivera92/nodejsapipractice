@@ -8,6 +8,7 @@ import { passportStrategiesEnum } from "./enums.js";
 import config from "./config.js";
 import UsersRepository from "../repositories/users.repository.js";
 import { Users } from "../dao/factory.js";
+import CustomError from "../middlewares/errors/CustomError.js";
 
 const JWTSrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
@@ -61,13 +62,13 @@ const initializePassport = () => {
                 email: username
             };
             const user = await usersRepository.getOne(options)
+            if (!user) {
+                return done(null, false, { message: 'AuthenticationError: Invalid credentials' });
+            }
             const match = await comparePasswords(password, user.password);
     
-            if (!user || !match) {
-                throw new CustomError({
-                    name: 'AuthenticationError',
-                    message: 'Invalid credentials'
-                });
+            if (!match) {
+                return done(null, false, { message: 'AuthenticationError: Invalid credentials' });
             }
             const updatedUser = await usersRepository.update(user.id, { last_connection: Date.now() });
             return done(null, user);
