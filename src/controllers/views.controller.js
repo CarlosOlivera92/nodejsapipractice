@@ -56,7 +56,7 @@ export default class ViewsController {
                     });
                 }
             }
-            
+            console.log(cart)
             // Renderizar la vista, pasando los productos y la información sobre si el usuario es un administrador
             res.render('products', { layout: 'main', products, user: req.session.user, isAdmin, cart, transformedProducts, cartId: cartId });
         } catch (error) {
