@@ -1,86 +1,101 @@
-<div class="products">
-    <div class="forms">
-        <div id="addProductForm" class="product-form">
-            <h2>Agregar un nuevo producto</h2>
-            <form class="form" id="form" action="/realtimeproducts" method="post">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="title">Título:</label>
-                        <input type="text" id="title" name="title" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Descripción:</label>
-                        <textarea id="description" name="description" class="form-control" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="price">Precio:</label>
-                        <input type="number" id="price" name="price" class="form-control" required>
-                    </div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <h2 class="text-center">Agregar un nuevo producto</h2>
                 </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="thumbnail">Miniaturas (separadas por comas):</label>
-                        <textarea  id="thumbnail" name="thumbnail" class="form-control" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="category">Categoría:</label>
-                        <input type="text" id="category" name="category" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="code">Código:</label>
-                        <input type="text" id="code" name="code" class="form-control" required>
-                    </div>
+                <div class="card-body">
+                    <form id="addProductForm" action="/realtimeproducts" method="post">
+                        <div class="form-group">
+                            <label for="title">Título:</label>
+                            <input type="text" id="title" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descripción:</label>
+                            <textarea id="description" name="description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Precio:</label>
+                            <input type="number" id="price" name="price" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="thumbnail">Miniaturas (separadas por comas):</label>
+                            <textarea id="thumbnail" name="thumbnail" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Categoría:</label>
+                            <input type="text" id="category" name="category" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="code">Código:</label>
+                            <input type="text" id="code" name="code" class="form-control" required>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="status" name="status" class="form-check-input">
+                            <label class="form-check-label" for="status">Disponible</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="stock">Stock:</label>
+                            <input type="number" id="stock" name="stock" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar Producto</button>
+                    </form>
                 </div>
-                <div class="row">
-                    <div class="form-group">
-                        <input type="hidden" name="status" value="false">
-                        <label for="status">Estado:</label>
-                        <input type="checkbox" id="status" name="status" class="form-check-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="stock">Stock:</label>
-                        <input type="number" id="stock" name="stock" class="form-control" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn">Agregar Producto</button>
-            </form>
+            </div>
         </div>
-        <div id="delProductsForm" class="product-form">
-            <h2>Eliminar un producto</h2>
-            <form class="form" id="delProductForm">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="productId">ID del producto:</label>
-                        <input type="text" id="productId" name="productId" class="form-control" required>
-                    </div>
+        <div class="col-lg-6">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <h2 class="text-center">Eliminar un producto</h2>
                 </div>
-                <button type="submit" class="btn">Eliminar Producto</button>
-            </form>
+                <div class="card-body">
+                    <form id="delProductForm">
+                        <div class="form-group">
+                            <label for="productId">ID del producto:</label>
+                            <input type="text" id="productId" name="productId" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Eliminar Producto</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="products-list" id="productList">
-        <h1>Productos</h1>
-        {{#each products}}
-            <ul >
-                <li>
-                    <h1>{{this.title}}</h1>
-                    <p>Descripción: {{this.description}}</p>
-                    <p>Precio: ${{this.price}}</p>
-                    <p>Categoría: {{this.category}}</p>
-                    <p>Código: {{this.code}}</p>
-                    <p>Estado: {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
-                    <p>Stock: {{this.stock}}</p>
-                </li>
-            </ul>
-            <div class="images">
-                <h2>Miniaturas:</h2>
-                {{#each this.thumbnail}}
-                    <img src="{{this}}" alt="Miniatura">
-                {{/each}}
+    <div class="row">
+        <div class="col">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <h2 class="text-center">Productos</h2>
+                </div>
+                <div class="card-body">
+                    <div class="products-list" id="productList">
+                        {{#each products}}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{this.title}}</h5>
+                                    <p class="card-text">Descripción: {{this.description}}</p>
+                                    <p class="card-text">Precio: ${{this.price}}</p>
+                                    <p class="card-text">Categoría: {{this.category}}</p>
+                                    <p class="card-text">Código: {{this.code}}</p>
+                                    <p class="card-text">Estado: {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
+                                    <p class="card-text">Stock: {{this.stock}}</p>
+                                    <div class="images">
+                                        <h6 class="card-subtitle mb-2 text-muted">Miniaturas:</h6>
+                                        {{#each this.thumbnail}}
+                                            <img src="{{this}}" class="img-thumbnail" alt="Miniatura">
+                                        {{/each}}
+                                    </div>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
             </div>
-        {{/each}}
+        </div>
     </div>
 </div>
+
+<script src="/js/index.js"></script>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/products.js"></script>

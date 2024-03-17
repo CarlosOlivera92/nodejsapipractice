@@ -8,6 +8,7 @@ import { passportStrategiesEnum } from "./enums.js";
 import config from "./config.js";
 import UsersRepository from "../repositories/users.repository.js";
 import { Users } from "../dao/factory.js";
+import CustomError from "../middlewares/errors/CustomError.js";
 
 const JWTSrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
@@ -61,13 +62,13 @@ const initializePassport = () => {
                 email: username
             };
             const user = await usersRepository.getOne(options)
+            if (!user) {
+                return done(null, false, { message: 'AuthenticationError: Invalid credentials' });
+            }
             const match = await comparePasswords(password, user.password);
     
-            if (!user || !match) {
-                throw new CustomError({
-                    name: 'AuthenticationError',
-                    message: 'Invalid credentials'
-                });
+            if (!match) {
+                return done(null, false, { message: 'AuthenticationError: Invalid credentials' });
             }
             const updatedUser = await usersRepository.update(user.id, { last_connection: Date.now() });
             return done(null, user);
@@ -78,13 +79,14 @@ const initializePassport = () => {
     passport.use('github', new GithubStrategy( {
         clientID:'Iv1.533d45cc3cdf1377',
         clientSecret: 'ca405ba7b5462f2e314de5cd6d4317c8c1547a15',
-        callbackURL: 'http://localhost:8080/api/sessions/github-callback'
+        callbackURL: 'http://localhost:3306/api/sessions/github-callback'
     }, async(accessToken, refreshToken, profile, done) => {
         try {
             const options = {
                 email: profile._json.email
             };
             const user = await usersRepository.getOne( options );
+            console.log(profile._json.email)
             if (!user) {
                 let newUser = {
                     first_name:profile._json.name,
@@ -157,13 +159,14 @@ const initializePassport = () => {
             return done(error);
         }
     }));
-    passport.serializeUser( (user, done) => {
-        done(null, user._id);
+    passport.serializeUser((user, done) => {
+        done(null, user.id); 
     });
-    passport.deserializeUser( async(id, done) => {
+    
+    passport.deserializeUser(async (id, done) => {
         const user = await usersRepository.getOne(id);
         done(null, user);
-    })
+    });
 
 }
 export {initializePassport};
